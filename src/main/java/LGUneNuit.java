@@ -16,6 +16,7 @@ public class LGUneNuit {
 
     private final static String TOKEN_FILE = "token.secret";
     private final static Charset TOKEN_CHARSET = StandardCharsets.UTF_8;
+    private String test;
 
 
     public static void main(String[] args) {
