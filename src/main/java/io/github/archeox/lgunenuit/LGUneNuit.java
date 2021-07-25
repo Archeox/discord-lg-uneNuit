@@ -12,26 +12,28 @@ import reactor.core.publisher.Flux;
 
 public class LGUneNuit {
 
-
     public static void main(String[] args) {
 
+        //on connecte le bot
         GatewayDiscordClient client = DiscordClientBuilder.create(args[0])
                 .build()
                 .login()
                 .block();
-        client.getEventDispatcher().on(ReadyEvent.class)
-                .subscribe(event -> {
-                    final User self = event.getSelf();
-                    System.out.println(String.format(
-                            "\u001B[32mLogged in as %s#%s\u001B[0m", self.getUsername(), self.getDiscriminator()
-                    ));
-                });
-        long guildId = Snowflake.asLong("868161907771711498");
 
+        String guildId = "868161907771711498";
+        RestClient restClient = client.getRestClient();
+
+        //on détruit les commandes slashs
+        deleteSlashCommands(restClient, guildId);
+
+        //on enregistre les commandes slashs
+
+
+        //on déconnecte le bot
         client.onDisconnect().block();
     }
 
-    private static void resetSlashCommands(RestClient restClient, String guildIdS) {
+    private static void deleteSlashCommands(RestClient restClient, String guildIdS) {
 
         long guildId = Snowflake.asLong(guildIdS);
 
