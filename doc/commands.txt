@@ -1,0 +1,20 @@
+COMMANDES SLASH
+
+/lgunenuit <channel voice> [optional]<text channel> -> Pour lancer la configuration d'une partie. (seulement par certains rôles)
+
+/lgconfig player add <utilisateur> : ajoute le joueur à la partie
+/lgconfig player del <utilisateur> : supprime le joueur de la partie
+/lgconfig role del <role> : enlève le rôle de la partie 
+/lgconfig role add <role> : ajoute le rôle à la partie
+
+/lginfo role <role> : donne des informations sur le rôle
+/lginfo general : donne des informations générales
+/lginfo commande : rappelle les commandes et leur utilité
+
+/lgstart : lance la partie
+
+(/lgopinion <role> <personne> : permet de dénoncer un rôle sur quelqu'un)
+
+/lgvote <personne> : voter pour quelqu'un
+
+/lgabort : annule la partie en cours
