@@ -34,6 +34,10 @@ public class LGPlayer {
         this.role = role;
     }
 
+    public boolean isMystery() {
+        return isMystery;
+    }
+
     public Mono<Message> whisper(MessageCreateSpec message){
         if (!isMystery) {
             return member.getPrivateChannel().flatMap(privateChannel -> privateChannel.createMessage(messageCreateSpec -> messageCreateSpec = message));
