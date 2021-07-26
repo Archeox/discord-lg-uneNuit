@@ -43,7 +43,7 @@ public class LGGame {
                 players.add(new LGPlayer(members.get(i), roles.get(i)));
             }
         }
-        
+
 
     }
 
