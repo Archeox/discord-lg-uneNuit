@@ -1,5 +1,9 @@
 package io.github.archeox.lgunenuit.roles;
 
+import io.github.archeox.lgunenuit.game.LGGame;
+import io.github.archeox.lgunenuit.Utility.Team;
+import reactor.core.publisher.Mono;
+
 public abstract class LGRole {
 
     private String name;
@@ -14,7 +18,7 @@ public abstract class LGRole {
         this.team = team;
     }
 
-    public abstract void action();
+    public abstract Mono<Void> action(LGGame game);
 
     public String getName() {
         return name;
