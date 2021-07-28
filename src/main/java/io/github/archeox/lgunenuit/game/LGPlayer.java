@@ -9,17 +9,18 @@ import reactor.core.publisher.Mono;
 /**
  * Classe représentant un joueur, avec son rôle attribué et effectif. Si le champ membre n'est pas spécifié, le joueur est une carte retournée.
  */
-public class LGPlayer {
+public class LGPlayer{
 
     private final LGRole attributedRole;
     private LGRole role;
     private final Member member;
-    private final boolean isMystery;
+    private final boolean isMember;
 
-    public LGPlayer(Member member, LGRole attributedRole) {
+    public LGPlayer(Member member, LGRole role) {
         this.member = member;
-        this.attributedRole = attributedRole;
-        this.isMystery = (this.member == null);
+        this.attributedRole = role;
+        this.role = role;
+        this.isMember = (this.member != null);
     }
 
     public LGRole getAttributedRole() {
@@ -34,12 +35,12 @@ public class LGPlayer {
         this.role = role;
     }
 
-    public boolean isMystery() {
-        return isMystery;
+    public boolean isMember() {
+        return isMember;
     }
 
     public Mono<Message> whisper(MessageCreateSpec message){
-        if (!isMystery) {
+        if (isMember) {
             return member.getPrivateChannel().flatMap(privateChannel -> privateChannel.createMessage(messageCreateSpec -> messageCreateSpec = message));
         } else {
             throw new UnsupportedOperationException("This player has no user.");
@@ -47,7 +48,7 @@ public class LGPlayer {
     }
 
     public Mono<Message> whisper(String message){
-        if (!isMystery) {
+        if (isMember) {
             return member.getPrivateChannel().flatMap(privateChannel -> privateChannel.createMessage(message));
         } else {
             throw new UnsupportedOperationException("This player has no user.");

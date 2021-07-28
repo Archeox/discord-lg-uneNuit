@@ -47,7 +47,7 @@ public class LGUneNuit {
                 .flatMapMany(Guild::getMembers)
                 .collectList()
                 .block(),
-                Arrays.asList(new Noiseuse(), new Noiseuse()),
+                Arrays.asList(new Noiseuse(9), new Noiseuse(9)),
                 client.getGuildById(Snowflake.of(guildId))
                 .flatMapMany(Guild::getChannels)
                 .ofType(TextChannel.class)

@@ -8,17 +8,18 @@ public abstract class LGRole {
 
     private String name;
     private String description;
-    private int turn;
     private Team team;
 
-    public LGRole(String name, String description, int turn, Team team) {
+    public LGRole(String name, String description, Team team) {
         this.name = name;
         this.description = description;
-        this.turn = turn;
         this.team = team;
     }
 
-    public abstract Mono<Void> action(LGGame game);
+    //méthode qui sera appelée à chaque tour
+    public Runnable getEachTurn(LGGame game) {
+        return null;
+    }
 
     public String getName() {
         return name;
@@ -36,11 +37,8 @@ public abstract class LGRole {
         this.description = description;
     }
 
-    public int getTurn() {
-        return turn;
-    }
-
-    public void setTurn(int turn) {
-        this.turn = turn;
+    @Override
+    public String toString() {
+        return name;
     }
 }
