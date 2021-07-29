@@ -4,18 +4,26 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.interaction.SelectMenuInteractEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.command.ApplicationCommand;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.rest.RestClient;
 import io.github.archeox.lgunenuit.game.LGGame;
+import io.github.archeox.lgunenuit.game.LGPlayer;
+import io.github.archeox.lgunenuit.roles.Noctambule;
 import io.github.archeox.lgunenuit.roles.Noiseuse;
+import io.github.archeox.lgunenuit.roles.Villageois;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,10 +33,12 @@ import java.util.List;
 
 public class LGUneNuit {
 
+    public static GatewayDiscordClient client;
+
     public static void main(String[] args) {
 
         //on connecte le bot
-        GatewayDiscordClient client = DiscordClientBuilder.create(args[0])
+        client = DiscordClientBuilder.create(args[0])
                 .build()
                 .login()
                 .block();
@@ -40,43 +50,30 @@ public class LGUneNuit {
                             "\u001B[32mLogged in as %s#%s\u001B[0m", self.getUsername(), self.getDiscriminator()
                     ));
                 });
+
+        //listener d'interaction
+        client.on(SelectMenuInteractEvent.class, selectMenuInteractEvent -> {
+
+        })
+
         String guildId = "868161907771711498";
 
-        LGGame game = new LGGame(
-                client.getGuildById(Snowflake.of(guildId))
-                .flatMapMany(Guild::getMembers)
-                .collectList()
-                .block(),
-                Arrays.asList(new Noiseuse(9), new Noiseuse(9)),
-                client.getGuildById(Snowflake.of(guildId))
-                .flatMapMany(Guild::getChannels)
-                .ofType(TextChannel.class)
-                .blockFirst()
-                );
+//        LGGame game = new LGGame(
+//                client.getGuildById(Snowflake.of(guildId))
+//                        .flatMapMany(Guild::getMembers)
+//                        .filter(member -> !member.isBot())
+//                        .collectList()
+//                        .block(),
+//                Arrays.asList(new Noiseuse(9), new Noiseuse(9)),
+//                client.getChannelById(Snowflake.of("868161911005540444"))
+//                        .cast(TextChannel.class)
+//                        .block()
+//        );
 
-        game.startGame();
+//        game.startGame().subscribe();
 
         //on déconnecte le bot
         client.onDisconnect().block();
-    }
-
-    private static void deleteSlashCommands(RestClient restClient, String guildIdS) {
-
-        long guildId = Snowflake.asLong(guildIdS);
-
-        restClient.getApplicationService().getGuildApplicationCommands(restClient.getApplicationId().block(), guildId)
-                .map(ApplicationCommandData::id).flatMap(s -> {
-
-            return restClient.getApplicationService().deleteGuildApplicationCommand(
-                    restClient.getApplicationId().block(),
-                    guildId,
-                    Snowflake.asLong(s)
-            );
-        }).subscribe();
-    }
-
-    private static void registerSlashCommands(RestClient restClient, Flux<ApplicationCommand> commands) {
-
     }
 
 }

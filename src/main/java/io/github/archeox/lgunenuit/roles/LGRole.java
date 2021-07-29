@@ -1,8 +1,7 @@
 package io.github.archeox.lgunenuit.roles;
 
 import io.github.archeox.lgunenuit.game.LGGame;
-import io.github.archeox.lgunenuit.Utility.Team;
-import reactor.core.publisher.Mono;
+import io.github.archeox.lgunenuit.utility.Team;
 
 public abstract class LGRole {
 

@@ -1,4 +1,4 @@
-package io.github.archeox.lgunenuit.Utility;
+package io.github.archeox.lgunenuit.utility;
 
 public enum Team {
     VILLAGE,

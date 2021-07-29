@@ -7,6 +7,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.archeox.lgunenuit.roles.LGRole;
 import io.github.archeox.lgunenuit.roles.Noctambule;
 import io.github.archeox.lgunenuit.roles.Noiseuse;
+import io.github.archeox.lgunenuit.utility.InteractionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -16,21 +17,22 @@ import java.util.List;
 
 public class LGGame {
 
-    private List<Member> members;
-    private List<LGRole> roles;
-    private MessageChannel channel;
-    private List<LGPlayer> players;
+    private final List<Member> members;
+    private final List<LGRole> roles;
+    private final MessageChannel channel;
+    private final List<LGPlayer> players;
+    private final InteractionManager interactionManager;
 
 
     public LGGame(List<Member> members, List<LGRole> roles, MessageChannel channel) {
         this.members = members;
         this.roles = roles;
         this.channel = channel;
-
         this.players = new ArrayList<>();
+        this.interactionManager = new InteractionManager();
     }
 
-    public void startGame() {
+    public Mono<Void> startGame() {
         postAnnounce("La partie va commencer !").subscribe();
 
         //on attribue les rôles aux joueurs
@@ -38,7 +40,7 @@ public class LGGame {
         Collections.shuffle(members);
         for (int i = 0; i < roles.size(); i++) {
             if (members.size() - 1 > i) {
-                players.add(new LGPlayer(members.get(i),roles.get(i)));
+                players.add(new LGPlayer(members.get(i), roles.get(i)));
             } else {
                 players.add(new LGPlayer(null, roles.get(i)));
             }
@@ -55,20 +57,32 @@ public class LGGame {
         //on fait jouer les joueurs
         Flux.fromIterable(players)
                 .filter(LGPlayer::isMember)
-                .map(LGPlayer::getAttributedRole)
-                .filter(lgRole -> lgRole instanceof Noctambule)
-                .cast(Noctambule.class)
+                .filter(player -> player.getAttributedRole() instanceof Noctambule)
                 .sort((o1, o2) -> {
-                   if (o1.getTurn() < o2.getTurn()) {
-                       return -1;
-                   }else if (o1.getTurn() > o2.getTurn()){
-                       return 1;
-                   }else{
-                       return 0;
-                   }
+                    Noctambule n1 = ((Noctambule) o1.getAttributedRole());
+                    Noctambule n2 = ((Noctambule) o2.getAttributedRole());
+                    if (n1.getTurn() < n2.getTurn()) {
+                        return -1;
+                    } else if (n1.getTurn() > n2.getTurn()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
                 })
+                .map(player ->
+                        Mono.just(player.getAttributedRole())
+                                .cast(Noctambule.class)
+                                .flatMapMany(noctambule -> noctambule.nightAction(this, player))
+                                .subscribe()
+                )
                 .subscribe();
 
+        postAnnounce("Le jour se lève !").subscribe();
+
+        //Phase de vote
+
+
+        return Mono.empty();
     }
 
     public Mono<Embed> postSummary() {
@@ -79,9 +93,13 @@ public class LGGame {
         return channel.createMessage(text);
     }
 
+    public InteractionManager getInteractionManager() {
+        return interactionManager;
+    }
+
     //================================================================================================================
     //Utility Methods for Actions by Roles
-    public void swapRoles(LGPlayer player1, LGPlayer player2){
+    public void swapRoles(LGPlayer player1, LGPlayer player2) {
         LGRole role = player2.getRole();
         player2.setRole(player1.getRole());
         player1.setRole(role);
@@ -101,7 +119,7 @@ public class LGGame {
         return result;
     }
 
-    public List<LGPlayer> getMysteryPlayers(){
+    public List<LGPlayer> getMysteryPlayers() {
         List<LGPlayer> result = new ArrayList<>();
         players.forEach(player -> {
             if (!player.isMember()) {
@@ -129,9 +147,5 @@ public class LGGame {
             }
         });
         return result;
-    }
-
-    public LGPlayer getMe(){
-        throw new RuntimeException();
     }
 }
