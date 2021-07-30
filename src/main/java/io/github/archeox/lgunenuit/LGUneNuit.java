@@ -17,6 +17,8 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.object.presence.Presence;
+import discord4j.core.object.presence.Status;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.rest.RestClient;
 import io.github.archeox.lgunenuit.game.LGGame;
@@ -52,9 +54,6 @@ public class LGUneNuit {
                 });
 
         //listener d'interaction
-        client.on(SelectMenuInteractEvent.class, selectMenuInteractEvent -> {
-
-        })
 
         String guildId = "868161907771711498";
 
@@ -62,6 +61,7 @@ public class LGUneNuit {
 //                client.getGuildById(Snowflake.of(guildId))
 //                        .flatMapMany(Guild::getMembers)
 //                        .filter(member -> !member.isBot())
+//                        .filter(member -> member.getPresence().block().getStatus().getValue().equals(Status.ONLINE))
 //                        .collectList()
 //                        .block(),
 //                Arrays.asList(new Noiseuse(9), new Noiseuse(9)),
@@ -69,8 +69,15 @@ public class LGUneNuit {
 //                        .cast(TextChannel.class)
 //                        .block()
 //        );
-
+//
 //        game.startGame().subscribe();
+
+        LGPlayer player = new LGPlayer(
+                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
+                new Noiseuse(9)
+        );
+
+        ((Noctambule) player.getAttributedRole()).nightAction(null, player).subscribe();
 
         //on déconnecte le bot
         client.onDisconnect().block();

@@ -6,8 +6,6 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.archeox.lgunenuit.roles.LGRole;
 import io.github.archeox.lgunenuit.roles.Noctambule;
-import io.github.archeox.lgunenuit.roles.Noiseuse;
-import io.github.archeox.lgunenuit.utility.InteractionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +19,6 @@ public class LGGame {
     private final List<LGRole> roles;
     private final MessageChannel channel;
     private final List<LGPlayer> players;
-    private final InteractionManager interactionManager;
 
 
     public LGGame(List<Member> members, List<LGRole> roles, MessageChannel channel) {
@@ -29,7 +26,6 @@ public class LGGame {
         this.roles = roles;
         this.channel = channel;
         this.players = new ArrayList<>();
-        this.interactionManager = new InteractionManager();
     }
 
     public Mono<Void> startGame() {
@@ -91,10 +87,6 @@ public class LGGame {
 
     public Mono<Message> postAnnounce(String text) {
         return channel.createMessage(text);
-    }
-
-    public InteractionManager getInteractionManager() {
-        return interactionManager;
     }
 
     //================================================================================================================
