@@ -57,27 +57,21 @@ public class LGUneNuit {
 
         String guildId = "868161907771711498";
 
-//        LGGame game = new LGGame(
-//                client.getGuildById(Snowflake.of(guildId))
-//                        .flatMapMany(Guild::getMembers)
-//                        .filter(member -> !member.isBot())
-//                        .filter(member -> member.getPresence().block().getStatus().getValue().equals(Status.ONLINE))
-//                        .collectList()
-//                        .block(),
-//                Arrays.asList(new Noiseuse(9), new Noiseuse(9)),
-//                client.getChannelById(Snowflake.of("868161911005540444"))
-//                        .cast(TextChannel.class)
-//                        .block()
-//        );
-//
-//        game.startGame().subscribe();
 
-        LGPlayer player = new LGPlayer(
-                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
-                new Noiseuse(9)
+        LGGame game = new LGGame(
+                client.getChannelById(Snowflake.of("868161911005540444"))
+                        .cast(TextChannel.class)
+                        .block()
         );
 
-        ((Noctambule) player.getAttributedRole()).nightAction(null, player).subscribe();
+        game.testGame(client.getMemberById(Snowflake.of(868161907771711498L) ,Snowflake.of(443421769383280650L)).block()).subscribe();
+
+//        LGPlayer player = new LGPlayer(
+//                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
+//                new Noiseuse(9)
+//        );
+
+//        ((Noctambule) player.getAttributedRole()).nightAction(null, player).subscribe();
 
         //on déconnecte le bot
         client.onDisconnect().block();

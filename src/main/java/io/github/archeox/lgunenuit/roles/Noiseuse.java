@@ -39,8 +39,6 @@ public class Noiseuse extends LGRole implements Noctambule {
 //        List<LGPlayer> playerList = game.getMembersPlayers();
 //        playerList.remove(self);
 
-        System.out.println("NOISEUSE");
-
 //        List<SelectMenu.Option> options = new ArrayList<>();
 //        for (LGPlayer player : playerList) {
 //            options.add(SelectMenu.Option.of(player.getMember().getDisplayName(), player.getId().toString()));
@@ -57,10 +55,9 @@ public class Noiseuse extends LGRole implements Noctambule {
                             .withMinValues(2)
                     ));
                 }, selectMenuInteractEvent ->
-                selectMenuInteractEvent.acknowledge()
-                        .then(selectMenuInteractEvent.getMessage().delete())
-                        .then(self.whisper(selectMenuInteractEvent.getValues().toString()))
-                        .then(self.whisper("Choix enregistrés !").then())
+                selectMenuInteractEvent.reply(selectMenuInteractEvent.getValues().toString())
+                        .then(self.whisper("Choix enregistrés !"))
+                        .then()
         );
     }
 }

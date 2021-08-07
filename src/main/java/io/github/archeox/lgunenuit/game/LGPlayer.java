@@ -77,7 +77,7 @@ public class LGPlayer {
                         LGUneNuit.client.on(SelectMenuInteractEvent.class, event ->
                                 Mono.justOrEmpty(event.getInteraction().getMessage())
                                         .map(Message::getId)
-                                        .filter(selectMenuMessageId::equals)
+                                        .filter(id -> id.equals(selectMenuMessageId))
                                         .then(func.apply(event))
                         )
                 )

@@ -3,12 +3,13 @@ package io.github.archeox.lgunenuit.game;
 import discord4j.core.object.Embed;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
-import io.github.archeox.lgunenuit.roles.LGRole;
-import io.github.archeox.lgunenuit.roles.Noctambule;
+import io.github.archeox.lgunenuit.roles.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,11 +66,13 @@ public class LGGame {
                         return 0;
                     }
                 })
-                .map(player ->
-                        Mono.just(player.getAttributedRole())
-                                .cast(Noctambule.class)
-                                .flatMapMany(noctambule -> noctambule.nightAction(this, player))
-                                .subscribe()
+                .map(player -> {
+                            System.out.println(player.getMember().getDisplayName());
+                            return Mono.just(player.getAttributedRole())
+                                    .cast(Noctambule.class)
+                                    .flatMapMany(noctambule -> noctambule.nightAction(this, player))
+                                    .subscribe();
+                        }
                 )
                 .subscribe();
 
@@ -139,5 +142,60 @@ public class LGGame {
             }
         });
         return result;
+    }
+
+
+    //================================================================================================================
+
+    public LGGame(MessageChannel channel){
+        players = new ArrayList<>();
+        members = new ArrayList<>();
+        roles = new ArrayList<>();
+        this.channel = channel;
+    }
+
+    public Mono<Void> testGame(Member member){
+
+
+        players.clear();
+        players.add(new LGPlayer(member, new Villageois()));
+        players.add(new LGPlayer(member, new Noiseuse(9)));
+        players.add(new LGPlayer(member, new Voyante(7)));
+
+        //on envoie leur rôle aux joueurs
+        Flux.fromIterable(players)
+                .filter(LGPlayer::isMember)
+                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
+                .then()
+                .delayElement(Duration.ofSeconds(10))
+                .then(postAnnounce("La nuit tombe sur le village !"))
+                .subscribe();
+
+        //on fait jouer les joueurs
+        Flux.fromIterable(players)
+                .filter(LGPlayer::isMember)
+                .filter(player -> player.getAttributedRole() instanceof Noctambule)
+                .sort((o1, o2) -> {
+                    Noctambule n1 = ((Noctambule) o1.getAttributedRole());
+                    Noctambule n2 = ((Noctambule) o2.getAttributedRole());
+                    if (n1.getTurn() < n2.getTurn()) {
+                        return -1;
+                    } else if (n1.getTurn() > n2.getTurn()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .delayUntil(player -> {
+                            System.out.println(String.format("\u001B[35m%s\u001B[0m", player.getAttributedRole().getName()));
+                            return Flux.just(player.getAttributedRole())
+                                    .cast(Noctambule.class)
+                                    .flatMap(noctambule -> noctambule.nightAction(this, player));
+                        }
+                )
+                .then(postAnnounce("Le jour se lève !"))
+                .subscribe();
+
+        return Mono.empty();
     }
 }
