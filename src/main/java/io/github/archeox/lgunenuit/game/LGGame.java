@@ -147,14 +147,14 @@ public class LGGame {
 
     //================================================================================================================
 
-    public LGGame(MessageChannel channel){
+    public LGGame(MessageChannel channel) {
         players = new ArrayList<>();
         members = new ArrayList<>();
         roles = new ArrayList<>();
         this.channel = channel;
     }
 
-    public Mono<Void> testGame(Member member){
+    public Mono<Void> testGame(Member member) {
 
 
         players.clear();
@@ -171,6 +171,7 @@ public class LGGame {
                 .then(postAnnounce("La nuit tombe sur le village !"))
                 .subscribe();
 
+
         //on fait jouer les joueurs
         Flux.fromIterable(players)
                 .filter(LGPlayer::isMember)
@@ -186,11 +187,10 @@ public class LGGame {
                         return 0;
                     }
                 })
-                .delayUntil(player -> {
+                .flatMap(player -> {
                             System.out.println(String.format("\u001B[35m%s\u001B[0m", player.getAttributedRole().getName()));
-                            return Flux.just(player.getAttributedRole())
-                                    .cast(Noctambule.class)
-                                    .flatMap(noctambule -> noctambule.nightAction(this, player));
+                             return Mono.empty()
+                                    .thenEmpty(((Noctambule) player.getAttributedRole()).nightAction(this, player));
                         }
                 )
                 .then(postAnnounce("Le jour se lève !"))
