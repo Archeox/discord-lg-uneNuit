@@ -5,13 +5,15 @@ import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
-import io.github.archeox.lgunenuit.game.LGPlayer;
+import io.github.archeox.lgunenuit.game.card.LGCard;
+import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.game.LGRole;
 import io.github.archeox.lgunenuit.game.Noctambule;
 import io.github.archeox.lgunenuit.utility.Team;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Voyante extends LGRole implements Noctambule {
 
@@ -27,15 +29,17 @@ public class Voyante extends LGRole implements Noctambule {
         return turn;
     }
 
+    //TODO : séléctionner deux cartes mystères
     @Override
-    public void nightAction(LGGame game, LGPlayer self) {
-        List<SelectMenu.Option> options = Arrays.asList(SelectMenu.Option.of("option 1", "foo"),
-                SelectMenu.Option.of("option 2", "bar"),
-                SelectMenu.Option.of("option 3", "baz"));
+    public void nightAction(LGGame game, PlayerCard self) {
+        List<LGCard> playerOptions = game.getAllPlayers();
+        playerOptions.remove(self);
+
+        List<SelectMenu.Option> options = playerOptions.stream().map(LGCard::toOption).collect(Collectors.toList());
 
         System.out.println(String.format("\u001B[36m%s\u001B[0m", super.getName()));
         self.whisper(messageCreateSpec -> {
-                    messageCreateSpec.setContent("Veuillez choisir un joueurs :");
+                    messageCreateSpec.setContent("Veuillez choisir un joueur :");
                     messageCreateSpec.setComponents(ActionRow.of(SelectMenu.of(self.getId().toString(), options)
                             .withMaxValues(1)
                             .withMinValues(1)

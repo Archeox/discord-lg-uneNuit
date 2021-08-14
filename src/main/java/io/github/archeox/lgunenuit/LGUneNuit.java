@@ -45,7 +45,7 @@ public class LGUneNuit {
 
         game.testGame(CLIENT.getMemberById(Snowflake.of(868161907771711498L) ,Snowflake.of(443421769383280650L)).block()).subscribe();
 
-//        LGPlayer player = new LGPlayer(
+//        PlayerCard player = new PlayerCard(
 //                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
 //                new Noiseuse(9)
 //        );

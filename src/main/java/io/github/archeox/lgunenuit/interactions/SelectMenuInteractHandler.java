@@ -32,7 +32,7 @@ public class SelectMenuInteractHandler {
                                 .map(Optional::get)
                                 .map(Message::getId)
                                 .filter(snowflake -> interactions.containsKey(snowflake))
-                                .map(snowflake -> interactions.get(snowflake))
+                                .map(snowflake -> interactions.remove(snowflake))
                                 .flatMap(func -> func.apply(selectMenuInteractEvent)))
                 .subscribe();
     }

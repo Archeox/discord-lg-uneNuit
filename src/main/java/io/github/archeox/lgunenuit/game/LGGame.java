@@ -1,23 +1,29 @@
 package io.github.archeox.lgunenuit.game;
 
 import discord4j.core.object.Embed;
+import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import io.github.archeox.lgunenuit.game.card.LGCard;
+import io.github.archeox.lgunenuit.game.card.MysteryCard;
+import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.*;
-import org.jetbrains.annotations.NotNull;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class LGGame {
 
     private final List<Member> members;
     private final List<LGRole> roles;
     private final MessageChannel channel;
-    private final List<LGPlayer> players;
-    private final List<LGPlayer> nightPlayers;
+    private final List<LGCard> cards;
+    private final List<PlayerCard> nightPlayers;
     private int currentTurn;
 
 
@@ -25,7 +31,7 @@ public class LGGame {
         this.members = members;
         this.roles = roles;
         this.channel = channel;
-        this.players = new ArrayList<>();
+        this.cards = new ArrayList<>();
         this.currentTurn = 0;
         this.nightPlayers = new ArrayList<>();
     }
@@ -38,15 +44,15 @@ public class LGGame {
 //        Collections.shuffle(members);
 //        for (int i = 0; i < roles.size(); i++) {
 //            if (members.size() - 1 > i) {
-//                players.add(new LGPlayer(members.get(i), roles.get(i)));
+//                players.add(new PlayerCard(members.get(i), roles.get(i)));
 //            } else {
-//                players.add(new LGPlayer(null, roles.get(i)));
+//                players.add(new PlayerCard(null, roles.get(i)));
 //            }
 //        }
 //
 //        //on envoie leur rôle aux joueurs
 //        Flux.fromIterable(players)
-//                .filter(LGPlayer::isMember)
+//                .filter(PlayerCard::isMember)
 //                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
 //                .subscribe();
 //
@@ -54,7 +60,7 @@ public class LGGame {
 //
 //        //on fait jouer les joueurs
 //        Flux.fromIterable(players)
-//                .filter(LGPlayer::isMember)
+//                .filter(PlayerCard::isMember)
 //                .filter(player -> player.getAttributedRole() instanceof Noctambule)
 //                .sort((o1, o2) -> {
 //                    Noctambule n1 = ((Noctambule) o1.getAttributedRole());
@@ -95,39 +101,39 @@ public class LGGame {
 
     //================================================================================================================
     //Utility Methods for Actions by Roles
-    public void swapRoles(@org.jetbrains.annotations.NotNull LGPlayer player1, @NotNull LGPlayer player2) {
+    public void swapRoles(PlayerCard player1, PlayerCard player2) {
         LGRole role = player2.getRole();
         player2.setRole(player1.getRole());
         player1.setRole(role);
     }
 
-    public List<LGPlayer> getAllPlayers() {
-        return players;
+    public List<LGCard> getAllPlayers() {
+        return cards;
     }
 
-    public List<LGPlayer> getMembersPlayers() {
-        List<LGPlayer> result = new ArrayList<>();
-        players.forEach(player -> {
-            if (player.isMember()) {
-                result.add(player);
+    public List<PlayerCard> getMembersPlayers() {
+        List<PlayerCard> result = new ArrayList<>();
+        cards.forEach(player -> {
+            if (player instanceof PlayerCard) {
+                result.add((PlayerCard) player);
             }
         });
         return result;
     }
 
-    public List<LGPlayer> getMysteryPlayers() {
-        List<LGPlayer> result = new ArrayList<>();
-        players.forEach(player -> {
-            if (!player.isMember()) {
-                result.add(player);
+    public List<MysteryCard> getMysteryPlayers() {
+        List<MysteryCard> result = new ArrayList<>();
+        cards.forEach(player -> {
+            if (player instanceof MysteryCard) {
+                result.add((MysteryCard) player);
             }
         });
         return result;
     }
 
-    public List<LGPlayer> getPlayersByAttributedRole(LGRole role) {
-        List<LGPlayer> result = new ArrayList<>();
-        players.forEach(player -> {
+    public List<LGCard> getCardsByAttributedRole(LGRole role) {
+        List<LGCard> result = new ArrayList<>();
+        cards.forEach(player -> {
             if (player.getAttributedRole().getName().equals(role.getName())) {
                 result.add(player);
             }
@@ -135,9 +141,9 @@ public class LGGame {
         return result;
     }
 
-    public List<LGPlayer> getPlayersByRole(LGRole role) {
-        List<LGPlayer> result = new ArrayList<>();
-        players.forEach(player -> {
+    public List<LGCard> getCardsByRole(LGRole role) {
+        List<LGCard> result = new ArrayList<>();
+        cards.forEach(player -> {
             if (player.getRole().getName().equals(role.getName())) {
                 result.add(player);
             }
@@ -145,11 +151,21 @@ public class LGGame {
         return result;
     }
 
+    public LGCard getCardById(UUID id) {
+        LGCard result = null;
+        for (LGCard player : cards) {
+            if (player.getId().equals(id)) {
+                result = player;
+                break;
+            }
+        }
+        return result;
+    }
 
     //================================================================================================================
 
     public LGGame(MessageChannel channel) {
-        players = new ArrayList<>();
+        cards = new ArrayList<>();
         members = new ArrayList<>();
         roles = new ArrayList<>();
         this.nightPlayers = new ArrayList<>();
@@ -159,24 +175,25 @@ public class LGGame {
     public Mono<Void> testGame(Member member) {
 
 
-        players.clear();
-        players.add(new LGPlayer(member, new Villageois()));
-        players.add(new LGPlayer(member, new Noiseuse(9)));
-        players.add(new LGPlayer(member, new Voyante(7)));
+        cards.clear();
+        cards.add(new PlayerCard(member, new Villageois()));
+        cards.add(new PlayerCard(member, new Noiseuse(9)));
+        cards.add(new PlayerCard(member, new Voyante(7)));
 
-//        //on envoie leur rôle aux joueurs
-//        Flux.fromIterable(players)
-//                .filter(LGPlayer::isMember)
-//                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
-//                .then()
-//                .delayElement(Duration.ofSeconds(10))
-//                .then(postAnnounce("La nuit tombe sur le village !"))
-//                .subscribe();
+        //on envoie leur rôle aux joueurs
+        Flux.fromIterable(cards)
+                .filter(lgCard -> lgCard instanceof PlayerCard)
+                .cast(PlayerCard.class)
+                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
+                .then()
+                .delayElement(Duration.ofSeconds(10))
+                .then(postAnnounce("La nuit tombe sur le village !"))
+                .subscribe();
 
         //on lance le premier tour
-        for (LGPlayer player : players){
-            if (player.getAttributedRole() instanceof Noctambule && player.isMember()){
-                nightPlayers.add(player);
+        for (LGCard card : cards) {
+            if (card.getAttributedRole() instanceof Noctambule && card instanceof PlayerCard) {
+                nightPlayers.add((PlayerCard) card);
             }
         }
 
@@ -201,7 +218,7 @@ public class LGGame {
         if (currentTurn < nightPlayers.size()) {
             ((Noctambule) nightPlayers.get(currentTurn).getAttributedRole()).nightAction(this, nightPlayers.get(currentTurn));
             currentTurn++;
-        }else{
+        } else {
             postAnnounce("Le jour se lève").subscribe();
         }
         return Mono.empty();

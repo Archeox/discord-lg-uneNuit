@@ -5,11 +5,10 @@ import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
-import io.github.archeox.lgunenuit.game.LGPlayer;
+import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.game.LGRole;
 import io.github.archeox.lgunenuit.game.Noctambule;
 import io.github.archeox.lgunenuit.utility.Team;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,13 +32,13 @@ public class Noiseuse extends LGRole implements Noctambule {
     }
 
     @Override
-    public void nightAction(LGGame game, LGPlayer self) {
+    public void nightAction(LGGame game, PlayerCard self) {
 
-//        List<LGPlayer> playerList = game.getMembersPlayers();
+//        List<PlayerCard> playerList = game.getMembersPlayers();
 //        playerList.remove(self);
 
 //        List<SelectMenu.Option> options = new ArrayList<>();
-//        for (LGPlayer player : playerList) {
+//        for (PlayerCard player : playerList) {
 //            options.add(SelectMenu.Option.of(player.getMember().getDisplayName(), player.getId().toString()));
 //        }
 
