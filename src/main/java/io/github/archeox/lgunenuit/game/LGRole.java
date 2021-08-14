@@ -1,4 +1,4 @@
-package io.github.archeox.lgunenuit.roles;
+package io.github.archeox.lgunenuit.game;
 
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.utility.Team;

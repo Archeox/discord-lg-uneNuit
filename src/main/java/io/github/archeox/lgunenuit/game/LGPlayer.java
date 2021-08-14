@@ -1,20 +1,12 @@
 package io.github.archeox.lgunenuit.game;
 
-import discord4j.core.event.domain.interaction.SelectMenuInteractEvent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.spec.MessageCreateSpec;
-import io.github.archeox.lgunenuit.LGUneNuit;
-import io.github.archeox.lgunenuit.roles.LGRole;
-import org.reactivestreams.Subscriber;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Classe représentant un joueur, avec son rôle attribué et effectif. Si le champ membre n'est pas spécifié, le joueur est une carte retournée.
@@ -67,20 +59,11 @@ public class LGPlayer {
         }
     }
 
-    public Mono<Void> menuInteraction(Consumer<MessageCreateSpec> content, Function<SelectMenuInteractEvent, Mono<Void>> func) {
-        Mono<Message> sendMessage = this.member.getPrivateChannel()
-                .flatMap(channel -> channel.createMessage(content));
-
-        return sendMessage
-                .map(Message::getId)
-                .flatMapMany(selectMenuMessageId ->
-                        LGUneNuit.client.on(SelectMenuInteractEvent.class, event ->
-                                Mono.justOrEmpty(event.getInteraction().getMessage())
-                                        .map(Message::getId)
-                                        .filter(id -> id.equals(selectMenuMessageId))
-                                        .then(func.apply(event))
-                        )
-                )
-                .then();
+    public Mono<Message> whisper(Consumer<MessageCreateSpec> content) {
+        if (isMember){
+            return this.getMember().getPrivateChannel()
+                    .flatMap(privateChannel -> privateChannel.createMessage(content));
+        }
+        return null;
     }
 }
