@@ -11,7 +11,6 @@ import io.github.archeox.lgunenuit.game.LGRole;
 import io.github.archeox.lgunenuit.game.Noctambule;
 import io.github.archeox.lgunenuit.utility.Team;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class Voyante extends LGRole implements Noctambule {
     //TODO : séléctionner deux cartes mystères
     @Override
     public void nightAction(LGGame game, PlayerCard self) {
-        List<LGCard> playerOptions = game.getAllPlayers();
+        List<LGCard> playerOptions = game.getAllCards();
         playerOptions.remove(self);
 
         List<SelectMenu.Option> options = playerOptions.stream().map(LGCard::toOption).collect(Collectors.toList());

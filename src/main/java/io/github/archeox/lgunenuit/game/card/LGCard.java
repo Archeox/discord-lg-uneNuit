@@ -1,14 +1,11 @@
 package io.github.archeox.lgunenuit.game.card;
 
+import discord4j.core.object.component.Button;
 import discord4j.core.object.component.SelectMenu;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.spec.MessageCreateSpec;
 import io.github.archeox.lgunenuit.game.LGRole;
-import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public abstract class LGCard {
 
@@ -41,9 +38,19 @@ public abstract class LGCard {
     @Override
     public abstract String toString();
 
-    public SelectMenu.Option toOption(){
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LGCard lgCard = (LGCard) o;
+        return Objects.equals(id, lgCard.id);
+    }
+
+    public SelectMenu.Option toOption() {
         return SelectMenu.Option.of(this.toString(), this.id.toString());
     }
 
-
+    public Button toButton() {
+        return Button.primary(this.id.toString(), this.toString());
+    }
 }

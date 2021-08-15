@@ -2,11 +2,11 @@ package io.github.archeox.lgunenuit.game.card;
 
 import io.github.archeox.lgunenuit.game.LGRole;
 
-public class MysteryCard extends LGCard{
+public class MysteryCard extends LGCard {
 
     private final String mystery;
 
-    public MysteryCard(LGRole role, String mystery) {
+    public MysteryCard(String mystery, LGRole role) {
         super(role);
         this.mystery = mystery;
     }
