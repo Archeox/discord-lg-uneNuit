@@ -17,6 +17,7 @@ import io.github.archeox.lgunenuit.utility.Vote;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.lang.management.MemoryNotificationInfo;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public class LGGame {
         return Mono.empty();
     }
 
-    public Mono<Void> votePhase() {
+    private Mono<Void> votePhase() {
 
         List<Button> buttons = getMembersCards().stream().map(LGCard::toButton).collect(Collectors.toList());
         buttons.add(Button.secondary(new MysteryCard("Nobody", new Villageois()).getId().toString(), "Tout le monde est innocent !"));
@@ -116,15 +117,31 @@ public class LGGame {
                     PlayerCard voter = getCardFromMember(buttonInteractEvent.getInteraction().getMember().get());
                     LGCard voted = getCardById(buttonInteractEvent.getCustomId());
 
-                    if (!vote.asVoted(voter)){
+                    if (voter == null || voted == null) {
+                        System.out.println("VOTE NULL");
+                        return buttonInteractEvent.acknowledge();
+                    } else if (!vote.asVoted(voter)) {
                         vote.registerVote(voter, voted);
+                        if (vote.hasEveryBodyVoted(getMembersCards())) {
+                            LGUneNuit.BUTTON_INTERACT_HANDLER.unRegisterInteraction(snowflake);
+                            return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !")
+                                    .then(endGame());
+                        } else {
+                            return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !");
+                        }
+                    } else {
+                            return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
                     }
-
-                    return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !");
-                }))
+                }, false))
                 .subscribe();
 
 
+        return Mono.empty();
+    }
+
+    //We're in the EndGame now...
+    private Mono<Void> endGame() {
+        System.out.println("We're in the EndGame now...");
         return Mono.empty();
     }
 
@@ -138,6 +155,7 @@ public class LGGame {
 
     //================================================================================================================
     //Utility Methods for Actions by Roles
+
     public void swapRoles(PlayerCard player1, PlayerCard player2) {
         LGRole role = player2.getRole();
         player2.setRole(player1.getRole());
@@ -199,11 +217,11 @@ public class LGGame {
         return result;
     }
 
-    public PlayerCard getCardFromMember(Member member){
+    public PlayerCard getCardFromMember(Member member) {
         PlayerCard result = null;
-        for (PlayerCard card : this.getMembersCards()){
+        for (PlayerCard card : this.getMembersCards()) {
             if (card.getMember().equals(member)) {
-                result  = card;
+                result = card;
                 break;
             }
         }
@@ -226,8 +244,6 @@ public class LGGame {
 
         cards.clear();
         cards.add(new PlayerCard(member, new Villageois()));
-        cards.add(new PlayerCard(member, new Noiseuse(9)));
-        cards.add(new PlayerCard(member, new Voyante(7)));
 
         //on envoie leur rôle aux joueurs
         Flux.fromIterable(cards)
