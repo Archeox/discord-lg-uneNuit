@@ -45,10 +45,12 @@ public class Voyante extends LGRole implements Noctambule {
                     ));
                 })
                 .map(Message::getId)
-                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
-                        selectMenuInteractEvent.reply("Choix enregistrés !\nVoyante")
-                                .then(game.nextTurn())
-                ))
+                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
+                    LGUneNuit.MENU_INTERACT_HANDLER.unRegisterMenuInteraction(snowflake);
+
+                    return selectMenuInteractEvent.reply("Choix enregistrés !\nVoyante")
+                            .then(game.nextTurn());
+                }))
                 .subscribe();
     }
 }

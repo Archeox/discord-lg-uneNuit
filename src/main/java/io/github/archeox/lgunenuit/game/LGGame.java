@@ -114,9 +114,10 @@ public class LGGame {
                 .map(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
 
                     PlayerCard voter = getCardFromMember(buttonInteractEvent.getInteraction().getMember().get());
+                    LGCard voted = getCardById(buttonInteractEvent.getCustomId());
 
                     if (!vote.asVoted(voter)){
-
+                        vote.registerVote(voter, voted);
                     }
 
                     return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !");
