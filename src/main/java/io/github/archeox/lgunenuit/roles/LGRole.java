@@ -1,4 +1,4 @@
-package io.github.archeox.lgunenuit.game;
+package io.github.archeox.lgunenuit.roles;
 
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.utility.Team;
@@ -30,6 +30,10 @@ public abstract class LGRole {
 
     public String getDescription() {
         return description;
+    }
+
+    public Team getTeam() {
+        return team;
     }
 
     public void setDescription(String description) {

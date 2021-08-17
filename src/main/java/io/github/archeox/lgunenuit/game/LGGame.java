@@ -10,14 +10,15 @@ import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.card.LGCard;
 import io.github.archeox.lgunenuit.game.card.MysteryCard;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
-import io.github.archeox.lgunenuit.roles.Noiseuse;
+import io.github.archeox.lgunenuit.roles.LGRole;
 import io.github.archeox.lgunenuit.roles.Villageois;
-import io.github.archeox.lgunenuit.roles.Voyante;
+import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
+import io.github.archeox.lgunenuit.roles.interfaces.SpecialVoter;
+import io.github.archeox.lgunenuit.utility.Team;
 import io.github.archeox.lgunenuit.utility.Vote;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.lang.management.MemoryNotificationInfo;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,8 +30,10 @@ public class LGGame {
     private final MessageChannel channel;
     private final List<LGCard> cards;
     private final List<PlayerCard> nightPlayers;
+    private final List<PlayerCard> votePlayers;
     private final Vote vote;
     private int currentTurn;
+    private int currentVote;
 
 
     public LGGame(List<Member> members, List<LGRole> roles, MessageChannel channel) {
@@ -39,7 +42,9 @@ public class LGGame {
         this.channel = channel;
         this.cards = new ArrayList<>();
         this.currentTurn = 0;
+        this.currentVote = 0;
         this.nightPlayers = new ArrayList<>();
+        this.votePlayers = new ArrayList<>();
         this.vote = new Vote();
     }
 
@@ -101,10 +106,12 @@ public class LGGame {
         return Mono.empty();
     }
 
+    //On crée un Vote complet par le village
     private Mono<Void> votePhase() {
 
         List<Button> buttons = getMembersCards().stream().map(LGCard::toButton).collect(Collectors.toList());
-        buttons.add(Button.secondary(new MysteryCard("Nobody", new Villageois()).getId().toString(), "Tout le monde est innocent !"));
+        MysteryCard nobody = new MysteryCard("Nobody", new Villageois());
+        buttons.add(Button.secondary("Nobody", "Tout le monde est innocent !"));
 
         //post voting message
         this.channel.createMessage(messageCreateSpec -> {
@@ -115,22 +122,22 @@ public class LGGame {
                 .map(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
 
                     PlayerCard voter = getCardFromMember(buttonInteractEvent.getInteraction().getMember().get());
-                    LGCard voted = getCardById(buttonInteractEvent.getCustomId());
+                    String id = buttonInteractEvent.getCustomId();
+                    LGCard voted = (!id.equals("Nobody")) ? getCardById(id) : nobody;
 
                     if (voter == null || voted == null) {
-                        System.out.println("VOTE NULL");
                         return buttonInteractEvent.acknowledge();
                     } else if (!vote.asVoted(voter)) {
                         vote.registerVote(voter, voted);
                         if (vote.hasEveryBodyVoted(getMembersCards())) {
                             LGUneNuit.BUTTON_INTERACT_HANDLER.unRegisterInteraction(snowflake);
                             return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !")
-                                    .then(endGame());
+                                    .then(specialVoterInit());
                         } else {
                             return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !");
                         }
                     } else {
-                            return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
+                        return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
                     }
                 }, false))
                 .subscribe();
@@ -139,10 +146,44 @@ public class LGGame {
         return Mono.empty();
     }
 
-    //We're in the EndGame now...
-    private Mono<Void> endGame() {
-        System.out.println("We're in the EndGame now...");
+    //On définit quels les rôles qui modifient le Vote, et on les fait jouer
+    private Mono<Void> specialVoterInit() {
+
+        for (LGCard card : cards) {
+            if (card.getAttributedRole() instanceof SpecialVoter && card instanceof PlayerCard) {
+                votePlayers.add((PlayerCard) card);
+            }
+        }
+        votePlayers.sort((o1, o2) -> {
+            SpecialVoter n1 = ((SpecialVoter) o1.getAttributedRole());
+            SpecialVoter n2 = ((SpecialVoter) o2.getAttributedRole());
+            if (n1.getPriority() < n2.getPriority()) {
+                return -1;
+            } else if (n1.getPriority() > n2.getPriority()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        return nextSpecialVoter();
+    }
+
+    public Mono<Void> nextSpecialVoter(){
+        if (currentVote < votePlayers.size()) {
+            ((Noctambule) votePlayers.get(currentVote).getAttributedRole()).nightAction(this, votePlayers.get(currentVote));
+            currentVote++;
+        } else {
+            endGame().subscribe();
+        }
         return Mono.empty();
+    }
+
+    //We're in the EndGame now...
+    private Mono<Void> endGame(){
+
+        Mono<Void> result = Mono.empty();
+
+        return result;
     }
 
     public Mono<Embed> postSummary() {
@@ -231,12 +272,15 @@ public class LGGame {
     //================================================================================================================
 
     public LGGame(MessageChannel channel) {
-        cards = new ArrayList<>();
-        members = new ArrayList<>();
-        roles = new ArrayList<>();
+        this.cards = new ArrayList<>();
+        this.members = new ArrayList<>();
+        this.roles = new ArrayList<>();
         this.nightPlayers = new ArrayList<>();
+        this.votePlayers = new ArrayList<>();
         this.channel = channel;
         this.vote = new Vote();
+        this.currentTurn = 0;
+        this.currentVote = 0;
     }
 
     public Mono<Void> testGame(Member member) {

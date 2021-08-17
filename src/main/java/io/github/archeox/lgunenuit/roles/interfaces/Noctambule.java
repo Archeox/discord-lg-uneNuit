@@ -1,5 +1,6 @@
-package io.github.archeox.lgunenuit.game;
+package io.github.archeox.lgunenuit.roles.interfaces;
 
+import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 
 public interface Noctambule {

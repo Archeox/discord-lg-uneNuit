@@ -3,10 +3,9 @@ package io.github.archeox.lgunenuit.game.card;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.spec.MessageCreateSpec;
-import io.github.archeox.lgunenuit.game.LGRole;
+import io.github.archeox.lgunenuit.roles.LGRole;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
