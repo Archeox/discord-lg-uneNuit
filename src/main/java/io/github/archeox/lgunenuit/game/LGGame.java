@@ -11,6 +11,7 @@ import io.github.archeox.lgunenuit.game.card.LGCard;
 import io.github.archeox.lgunenuit.game.card.MysteryCard;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.LGRole;
+import io.github.archeox.lgunenuit.roles.LoupGarou;
 import io.github.archeox.lgunenuit.roles.Villageois;
 import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
 import io.github.archeox.lgunenuit.roles.interfaces.SpecialVoter;
@@ -49,7 +50,8 @@ public class LGGame {
     }
 
     public Mono<Void> startGame() {
-        postAnnounce("La partie va commencer !").subscribe();
+
+        Mono result = postAnnounce("La partie va commencer !");
 
         //on attribue les rôles aux joueurs
         int mysteryCount = 1;
@@ -66,14 +68,13 @@ public class LGGame {
 
 
         //on envoie leur rôle aux joueurs
-        Flux.fromIterable(cards)
+        result.then(Flux.fromIterable(cards)
                 .filter(lgCard -> lgCard instanceof PlayerCard)
                 .cast(PlayerCard.class)
                 .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
                 .then()
                 .delayElement(Duration.ofSeconds(10))
-                .then(postAnnounce("La nuit tombe sur le village !"))
-                .subscribe();
+                .then(postAnnounce("La nuit tombe sur le village !")));
 
         //on lance le premier tour
         for (LGCard card : cards) {
@@ -92,8 +93,8 @@ public class LGGame {
                 return 0;
             }
         });
-        nextTurn().subscribe();
-        return Mono.empty();
+        result.then(nextTurn());
+        return result;
     }
 
     public Mono<Void> nextTurn() {
@@ -168,7 +169,7 @@ public class LGGame {
         return nextSpecialVoter();
     }
 
-    public Mono<Void> nextSpecialVoter(){
+    public Mono<Void> nextSpecialVoter() {
         if (currentVote < votePlayers.size()) {
             ((Noctambule) votePlayers.get(currentVote).getAttributedRole()).nightAction(this, votePlayers.get(currentVote));
             currentVote++;
@@ -179,10 +180,35 @@ public class LGGame {
     }
 
     //We're in the EndGame now...
-    private Mono<Void> endGame(){
+    private Mono<Void> endGame() {
 
-        Mono<Void> result = Mono.empty();
+        Team eliminatedTeam = this.vote.getWinner().getRole().getTeam();
+        Mono<Void> result;
 
+        switch (eliminatedTeam) {
+            case VILLAGE -> result = postAnnounce("Les loups-garous ont gagné !").then();
+            case LG -> result = postAnnounce("Le Village a gagné !").then();
+            case SBIRE -> {
+                if (!onlyMemberCard(getCardsByRole(LoupGarou.class)).isEmpty()) {
+                    result = postAnnounce("Les Loups-Garou ont gagné grâce au sacrifice du Sbire !").then();
+                } else {
+                    result = postAnnounce("Le Village a gagné !").then();
+                }
+            }
+            case TANNEUR -> result = postAnnounce("Le Tanneur a gagné !").then();
+            default -> throw new IllegalStateException("Non-Valid Team");
+        }
+
+        String endMessage = "C'est la fin de la partie, voici le résumé des roles :\n";
+        for (LGCard card : cards) {
+            if (card instanceof PlayerCard) {
+                endMessage = endMessage.concat(String.format("%s **->** %s", ((PlayerCard) card).getMember().getNicknameMention(), card.getRole().toString()));
+            } else {
+                endMessage = endMessage.concat(String.format("%s **->** %s", card.toString(), card.getRole().toString()));
+            }
+        }
+
+        result.then(postAnnounce(endMessage));
         return result;
     }
 
@@ -227,20 +253,20 @@ public class LGGame {
         return result;
     }
 
-    public List<LGCard> getCardsByAttributedRole(LGRole role) {
+    public List<LGCard> getCardsByAttributedRole(Class<? extends LGRole> roleClass) {
         List<LGCard> result = new ArrayList<>();
         cards.forEach(player -> {
-            if (player.getAttributedRole().getName().equals(role.getName())) {
+            if (roleClass.isInstance(player.getAttributedRole())) {
                 result.add(player);
             }
         });
         return result;
     }
 
-    public List<LGCard> getCardsByRole(LGRole role) {
+    public List<LGCard> getCardsByRole(Class<? extends LGRole> roleClass) {
         List<LGCard> result = new ArrayList<>();
         cards.forEach(player -> {
-            if (player.getRole().getName().equals(role.getName())) {
+            if (roleClass.isInstance(player.getRole())) {
                 result.add(player);
             }
         });
@@ -269,6 +295,16 @@ public class LGGame {
         return result;
     }
 
+    public List<PlayerCard> onlyMemberCard(List<LGCard> lgCards) {
+        List<PlayerCard> result = new ArrayList<>();
+        for (LGCard lgCard : lgCards) {
+            if (lgCard instanceof PlayerCard) {
+                result.add((PlayerCard) lgCard);
+            }
+        }
+        return result;
+    }
+
     //================================================================================================================
 
     public LGGame(MessageChannel channel) {
@@ -285,19 +321,18 @@ public class LGGame {
 
     public Mono<Void> testGame(Member member) {
 
-
         cards.clear();
         cards.add(new PlayerCard(member, new Villageois()));
 
         //on envoie leur rôle aux joueurs
-        Flux.fromIterable(cards)
+        Mono<Void> result = Flux.fromIterable(cards)
                 .filter(lgCard -> lgCard instanceof PlayerCard)
                 .cast(PlayerCard.class)
                 .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
                 .then()
                 .delayElement(Duration.ofSeconds(10))
                 .then(postAnnounce("La nuit tombe sur le village !"))
-                .subscribe();
+                .then();
 
         //on lance le premier tour
         for (LGCard card : cards) {
@@ -318,8 +353,8 @@ public class LGGame {
             }
         });
 
-        nextTurn().subscribe();
+        result.then(nextTurn());
 
-        return Mono.empty();
+        return result;
     }
 }

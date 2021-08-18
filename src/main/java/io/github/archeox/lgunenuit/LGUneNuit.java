@@ -5,11 +5,22 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ButtonInteractEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.object.presence.Presence;
+import discord4j.core.object.presence.Status;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
+import io.github.archeox.lgunenuit.roles.LoupGarou;
+import io.github.archeox.lgunenuit.roles.Noiseuse;
+import io.github.archeox.lgunenuit.roles.Villageois;
+import io.github.archeox.lgunenuit.roles.Voyante;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class LGUneNuit {
 
@@ -37,16 +48,25 @@ public class LGUneNuit {
         MENU_INTERACT_HANDLER.initalize(CLIENT);
         BUTTON_INTERACT_HANDLER.initalize(CLIENT);
 
-        String guildId = "868161907771711498";
+        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
 
+
+        List<Member> memberList = guild.getMembers()
+                .filter(member -> !member.isBot())
+                .filter(member -> member.getPresence().block().getStatus().equals(Status.ONLINE))
+                .collectList()
+                .block();
+        for (Member member : memberList) {
+            System.out.println(member.getDisplayName());
+        }
 
         LGGame game = new LGGame(
-                CLIENT.getChannelById(Snowflake.of("868161911005540444"))
-                        .cast(TextChannel.class)
-                        .block()
+                memberList,
+                Arrays.asList(new Villageois(), new Voyante(7), new Noiseuse(8), new LoupGarou(10), new Villageois()),
+                CLIENT.getChannelById(Snowflake.of(868161911005540444L)).cast(TextChannel.class).block()
         );
 
-        game.testGame(CLIENT.getMemberById(Snowflake.of(868161907771711498L) ,Snowflake.of(443421769383280650L)).block()).subscribe();
+        game.startGame().subscribe();
 
 //        PlayerCard player = new PlayerCard(
 //                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
