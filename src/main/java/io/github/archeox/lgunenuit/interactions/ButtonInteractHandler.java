@@ -42,22 +42,18 @@ public class ButtonInteractHandler {
                 .subscribe();
     }
 
-    public boolean registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event) {
-        boolean result = false;
+    public Mono<Void> registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event) {
         if (id != null && event != null) {
             interactions.put(id, new MutablePair<>(event, true));
-            result = true;
         }
-        return result;
+        return Mono.empty();
     }
 
-    public boolean registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event, boolean autoRemove) {
-        boolean result = false;
+    public Mono<Void> registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event, boolean autoRemove) {
         if (id != null && event != null) {
             interactions.put(id, new MutablePair<>(event, autoRemove));
-            result = true;
         }
-        return result;
+        return Mono.empty();
     }
 
     public void unRegisterInteraction(Snowflake id) {

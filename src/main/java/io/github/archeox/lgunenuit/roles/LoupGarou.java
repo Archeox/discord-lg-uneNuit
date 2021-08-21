@@ -4,6 +4,7 @@ import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
 import io.github.archeox.lgunenuit.utility.Team;
+import reactor.core.publisher.Mono;
 
 public class LoupGarou extends LGRole implements Noctambule {
 
@@ -22,7 +23,7 @@ public class LoupGarou extends LGRole implements Noctambule {
     }
 
     @Override
-    public void nightAction(LGGame game, PlayerCard self) {
-
+    public Mono<Void> nightAction(LGGame game, PlayerCard self) {
+        return game.nextTurn();
     }
 }

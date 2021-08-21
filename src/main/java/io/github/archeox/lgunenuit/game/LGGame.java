@@ -51,14 +51,12 @@ public class LGGame {
 
     public Mono<Void> startGame() {
 
-        Mono result = postAnnounce("La partie va commencer !");
-
         //on attribue les rôles aux joueurs
         int mysteryCount = 1;
         Collections.shuffle(roles);
         Collections.shuffle(members);
         for (int i = 0; i < roles.size(); i++) {
-            if (members.size() - 1 > i) {
+            if (members.size() > i) {
                 cards.add(new PlayerCard(members.get(i), roles.get(i)));
             } else {
                 cards.add(new MysteryCard("Mystère #" + mysteryCount, roles.get(i)));
@@ -66,17 +64,7 @@ public class LGGame {
             }
         }
 
-
-        //on envoie leur rôle aux joueurs
-        result.then(Flux.fromIterable(cards)
-                .filter(lgCard -> lgCard instanceof PlayerCard)
-                .cast(PlayerCard.class)
-                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
-                .then()
-                .delayElement(Duration.ofSeconds(10))
-                .then(postAnnounce("La nuit tombe sur le village !")));
-
-        //on lance le premier tour
+        //on remplit nightplayer
         for (LGCard card : cards) {
             if (card.getAttributedRole() instanceof Noctambule && card instanceof PlayerCard) {
                 nightPlayers.add((PlayerCard) card);
@@ -93,18 +81,26 @@ public class LGGame {
                 return 0;
             }
         });
-        result.then(nextTurn());
-        return result;
+
+        //on envoie leur rôle aux joueurs
+        Flux<Message> roleMessage = Flux.fromIterable(cards)
+                .filter(lgCard -> lgCard instanceof PlayerCard)
+                .cast(PlayerCard.class)
+                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()));
+
+        return Mono.when(roleMessage)
+                .then(postAnnounce("La nuit tombe sur le village !"))
+                .then(nextTurn());
     }
 
     public Mono<Void> nextTurn() {
         if (currentTurn < nightPlayers.size()) {
-            ((Noctambule) nightPlayers.get(currentTurn).getAttributedRole()).nightAction(this, nightPlayers.get(currentTurn));
+            Mono<Void> result = ((Noctambule) nightPlayers.get(currentTurn).getAttributedRole()).nightAction(this, nightPlayers.get(currentTurn));
             currentTurn++;
+            return result;
         } else {
-            votePhase().subscribe();
+            return votePhase();
         }
-        return Mono.empty();
     }
 
     //On crée un Vote complet par le village
@@ -115,12 +111,12 @@ public class LGGame {
         buttons.add(Button.secondary("Nobody", "Tout le monde est innocent !"));
 
         //post voting message
-        this.channel.createMessage(messageCreateSpec -> {
+        return this.channel.createMessage(messageCreateSpec -> {
                     messageCreateSpec.setContent("Veuillez cliquer sur la personne que vous voulez éliminer :");
                     messageCreateSpec.setComponents(ActionRow.of(buttons));
                 })
                 .map(Message::getId)
-                .map(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
+                .flatMap(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
 
                     PlayerCard voter = getCardFromMember(buttonInteractEvent.getInteraction().getMember().get());
                     String id = buttonInteractEvent.getCustomId();
@@ -140,11 +136,7 @@ public class LGGame {
                     } else {
                         return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
                     }
-                }, false))
-                .subscribe();
-
-
-        return Mono.empty();
+                }, false));
     }
 
     //On définit quels les rôles qui modifient le Vote, et on les fait jouer
@@ -171,12 +163,12 @@ public class LGGame {
 
     public Mono<Void> nextSpecialVoter() {
         if (currentVote < votePlayers.size()) {
-            ((Noctambule) votePlayers.get(currentVote).getAttributedRole()).nightAction(this, votePlayers.get(currentVote));
+            Mono<Void> result = ((SpecialVoter) votePlayers.get(currentVote).getAttributedRole()).voteAction(this, votePlayers.get(currentVote), this.vote);
             currentVote++;
+            return result;
         } else {
-            endGame().subscribe();
+            return endGame();
         }
-        return Mono.empty();
     }
 
     //We're in the EndGame now...
@@ -199,17 +191,15 @@ public class LGGame {
             default -> throw new IllegalStateException("Non-Valid Team");
         }
 
-        String endMessage = "C'est la fin de la partie, voici le résumé des roles :\n";
+        String endMessage = "C'est la fin de la partie, voici le résumé des roles :";
         for (LGCard card : cards) {
             if (card instanceof PlayerCard) {
-                endMessage = endMessage.concat(String.format("%s **->** %s", ((PlayerCard) card).getMember().getNicknameMention(), card.getRole().toString()));
+                endMessage = endMessage.concat(String.format("\n%s **->** %s", ((PlayerCard) card).getMember().getNicknameMention(), card.getRole().toString()));
             } else {
-                endMessage = endMessage.concat(String.format("%s **->** %s", card.toString(), card.getRole().toString()));
+                endMessage = endMessage.concat(String.format("\n%s **->** %s", card.toString(), card.getRole().toString()));
             }
         }
-
-        result.then(postAnnounce(endMessage));
-        return result;
+        return Mono.when(result).then(postAnnounce(endMessage)).then();
     }
 
     public Mono<Embed> postSummary() {

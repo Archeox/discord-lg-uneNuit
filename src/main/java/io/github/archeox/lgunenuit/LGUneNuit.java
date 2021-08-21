@@ -14,10 +14,7 @@ import discord4j.core.object.presence.Status;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
-import io.github.archeox.lgunenuit.roles.LoupGarou;
-import io.github.archeox.lgunenuit.roles.Noiseuse;
-import io.github.archeox.lgunenuit.roles.Villageois;
-import io.github.archeox.lgunenuit.roles.Voyante;
+import io.github.archeox.lgunenuit.roles.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +50,7 @@ public class LGUneNuit {
 
         List<Member> memberList = guild.getMembers()
                 .filter(member -> !member.isBot())
-                .filter(member -> member.getPresence().block().getStatus().equals(Status.ONLINE))
+                .filter(member -> (member.getPresence().block().getStatus().equals(Status.ONLINE) || member.getPresence().block().getStatus().equals(Status.DO_NOT_DISTURB)))
                 .collectList()
                 .block();
         for (Member member : memberList) {
@@ -62,7 +59,7 @@ public class LGUneNuit {
 
         LGGame game = new LGGame(
                 memberList,
-                Arrays.asList(new Villageois(), new Voyante(7), new Noiseuse(8), new LoupGarou(10), new Villageois()),
+                Arrays.asList(new Noiseuse(8), new Noiseuse(2)),
                 CLIENT.getChannelById(Snowflake.of(868161911005540444L)).cast(TextChannel.class).block()
         );
 

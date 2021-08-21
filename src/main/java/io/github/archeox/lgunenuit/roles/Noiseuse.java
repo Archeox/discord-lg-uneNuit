@@ -8,6 +8,7 @@ import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
 import io.github.archeox.lgunenuit.utility.Team;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Noiseuse extends LGRole implements Noctambule {
     }
 
     @Override
-    public void nightAction(LGGame game, PlayerCard self) {
+    public Mono<Void> nightAction(LGGame game, PlayerCard self) {
 
 //        List<PlayerCard> playerList = game.getMembersPlayers();
 //        playerList.remove(self);
@@ -45,9 +46,10 @@ public class Noiseuse extends LGRole implements Noctambule {
                 SelectMenu.Option.of("option 2", "bar"),
                 SelectMenu.Option.of("option 3", "baz"));
 
+
         System.out.println(String.format("\u001B[36m%s\u001B[0m", super.getName()));
 
-        self.whisper(messageCreateSpec -> {
+        return self.whisper(messageCreateSpec -> {
                     messageCreateSpec.setContent("Veuillez choisir deux joueurs :");
                     messageCreateSpec.setComponents(ActionRow.of(SelectMenu.of(self.getId().toString(), options)
                             .withMaxValues(2)
@@ -55,11 +57,10 @@ public class Noiseuse extends LGRole implements Noctambule {
                     ));
                 })
                 .map(Message::getId)
-                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
-                    selectMenuInteractEvent.reply("Choix enregistrés !\nNoiseuse")
-                            .then(game.nextTurn())
-                ))
-                .subscribe();
+                .flatMap(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
+                        selectMenuInteractEvent.reply("Choix enregistrés !\nVoyante")
+                                .then(game.nextTurn())
+                ));
 
     }
 }

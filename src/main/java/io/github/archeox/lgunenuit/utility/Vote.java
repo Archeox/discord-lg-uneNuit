@@ -33,7 +33,6 @@ public class Vote {
         boolean result = true;
         for (LGCard card : cards) {
             if (!this.vote.containsKey(card)) {
-                System.out.println("FAUX");
                 result = false;
                 break;
             }
