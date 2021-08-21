@@ -2,8 +2,9 @@ package io.github.archeox.lgunenuit.roles;
 
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
-import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
-import io.github.archeox.lgunenuit.utility.Team;
+import io.github.archeox.lgunenuit.roles.core.LGRole;
+import io.github.archeox.lgunenuit.roles.core.Noctambule;
+import io.github.archeox.lgunenuit.enums.Team;
 import reactor.core.publisher.Mono;
 
 public class Sbire extends LGRole implements Noctambule {

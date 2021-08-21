@@ -1,4 +1,4 @@
-package io.github.archeox.lgunenuit.utility;
+package io.github.archeox.lgunenuit.enums;
 
 public enum Team {
     //Enum representing Team. Each that has special winnning condition gets a Team.

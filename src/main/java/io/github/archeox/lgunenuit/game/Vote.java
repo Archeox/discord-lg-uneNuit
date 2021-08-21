@@ -1,4 +1,4 @@
-package io.github.archeox.lgunenuit.utility;
+package io.github.archeox.lgunenuit.game;
 
 
 import io.github.archeox.lgunenuit.game.card.LGCard;

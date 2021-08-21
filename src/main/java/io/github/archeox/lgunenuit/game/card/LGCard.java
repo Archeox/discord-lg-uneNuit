@@ -2,7 +2,7 @@ package io.github.archeox.lgunenuit.game.card;
 
 import discord4j.core.object.component.Button;
 import discord4j.core.object.component.SelectMenu;
-import io.github.archeox.lgunenuit.roles.LGRole;
+import io.github.archeox.lgunenuit.roles.core.LGRole;
 
 import java.util.Objects;
 import java.util.UUID;

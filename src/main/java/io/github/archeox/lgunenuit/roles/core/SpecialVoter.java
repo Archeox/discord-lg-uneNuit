@@ -1,8 +1,8 @@
-package io.github.archeox.lgunenuit.roles.interfaces;
+package io.github.archeox.lgunenuit.roles.core;
 
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
-import io.github.archeox.lgunenuit.utility.Vote;
+import io.github.archeox.lgunenuit.game.Vote;
 import reactor.core.publisher.Mono;
 
 public interface SpecialVoter {

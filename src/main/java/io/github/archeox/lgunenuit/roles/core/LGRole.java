@@ -1,7 +1,7 @@
-package io.github.archeox.lgunenuit.roles;
+package io.github.archeox.lgunenuit.roles.core;
 
 import io.github.archeox.lgunenuit.game.LGGame;
-import io.github.archeox.lgunenuit.utility.Team;
+import io.github.archeox.lgunenuit.enums.Team;
 
 public abstract class LGRole {
 

@@ -1,6 +1,6 @@
 package io.github.archeox.lgunenuit.game.card;
 
-import io.github.archeox.lgunenuit.roles.LGRole;
+import io.github.archeox.lgunenuit.roles.core.LGRole;
 
 public class MysteryCard extends LGCard {
 

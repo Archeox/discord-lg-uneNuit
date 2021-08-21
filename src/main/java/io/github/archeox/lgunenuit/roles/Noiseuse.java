@@ -6,8 +6,9 @@ import discord4j.core.object.entity.Message;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
-import io.github.archeox.lgunenuit.roles.interfaces.Noctambule;
-import io.github.archeox.lgunenuit.utility.Team;
+import io.github.archeox.lgunenuit.roles.core.LGRole;
+import io.github.archeox.lgunenuit.roles.core.Noctambule;
+import io.github.archeox.lgunenuit.enums.Team;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
