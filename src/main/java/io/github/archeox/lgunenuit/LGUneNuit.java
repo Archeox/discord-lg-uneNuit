@@ -11,11 +11,14 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.presence.Status;
+import io.github.archeox.lgunenuit.config.LGGameManager;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
+import io.github.archeox.lgunenuit.interactions.SlashCommandHandler;
 import io.github.archeox.lgunenuit.roles.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +26,8 @@ public class LGUneNuit {
 
     public final static SelectMenuInteractHandler MENU_INTERACT_HANDLER = new SelectMenuInteractHandler();
     public final static ButtonInteractHandler BUTTON_INTERACT_HANDLER = new ButtonInteractHandler();
+    public final static SlashCommandHandler SLASH_COMMAND_HANDLER = new SlashCommandHandler();
+    public final static LGGameManager GAME_MANAGER = new LGGameManager();
     private static GatewayDiscordClient CLIENT;
 
     public static void main(String[] args) {
@@ -44,26 +49,27 @@ public class LGUneNuit {
         //on initialise les listeners
         MENU_INTERACT_HANDLER.initalize(CLIENT);
         BUTTON_INTERACT_HANDLER.initalize(CLIENT);
+        SLASH_COMMAND_HANDLER.intialize(CLIENT);
+        GAME_MANAGER.initalize();
 
-        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
 
-
-        List<Member> memberList = guild.getMembers()
-                .filter(member -> !member.isBot())
-                .filter(member -> (member.getPresence().block().getStatus().equals(Status.ONLINE) || member.getPresence().block().getStatus().equals(Status.DO_NOT_DISTURB)))
-                .collectList()
-                .block();
-        for (Member member : memberList) {
-            System.out.println(member.getDisplayName());
-        }
-
-        LGGame game = new LGGame(
-                memberList,
-                Arrays.asList(new Noiseuse(8), new Noiseuse(2)),
-                CLIENT.getChannelById(Snowflake.of(868161911005540444L)).cast(TextChannel.class).block()
-        );
-
-        game.startGame().subscribe();
+//        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
+//        List<Member> memberList = guild.getMembers()
+//                .filter(member -> !member.isBot())
+//                .filter(member -> (member.getPresence().block().getStatus().equals(Status.ONLINE) || member.getPresence().block().getStatus().equals(Status.DO_NOT_DISTURB)))
+//                .collectList()
+//                .block();
+//        for (Member member : memberList) {
+//            System.out.println(member.getDisplayName());
+//        }
+//
+//        LGGame game = new LGGame(
+//                memberList,
+//                Arrays.asList(new Noiseuse(8), new Noiseuse(2)),
+//                CLIENT.getChannelById(Snowflake.of(868161911005540444L)).cast(TextChannel.class).block()
+//        );
+//
+//        game.startGame().subscribe();
 
 //        PlayerCard player = new PlayerCard(
 //                client.getMemberById(Snowflake.of("868161907771711498"), Snowflake.of(443421769383280650l)).block(),
