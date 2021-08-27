@@ -12,6 +12,7 @@ import io.github.archeox.lgunenuit.interactions.SlashCommandHandler;
 public class LGUneNuit {
     
     private String test;
+    private String test2;
 
     public final static SelectMenuInteractHandler MENU_INTERACT_HANDLER = new SelectMenuInteractHandler();
     public final static ButtonInteractHandler BUTTON_INTERACT_HANDLER = new ButtonInteractHandler();
