@@ -1,28 +1,17 @@
 package io.github.archeox.lgunenuit;
 
-import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.ButtonInteractEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.presence.Presence;
-import discord4j.core.object.presence.Status;
 import io.github.archeox.lgunenuit.config.LGGameManager;
-import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SlashCommandHandler;
-import io.github.archeox.lgunenuit.roles.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class LGUneNuit {
+    
+    private String test;
 
     public final static SelectMenuInteractHandler MENU_INTERACT_HANDLER = new SelectMenuInteractHandler();
     public final static ButtonInteractHandler BUTTON_INTERACT_HANDLER = new ButtonInteractHandler();
