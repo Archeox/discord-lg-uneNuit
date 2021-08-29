@@ -6,10 +6,11 @@ import discord4j.core.event.domain.interaction.SelectMenuInteractEvent;
 import discord4j.core.object.command.Interaction;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
-import io.github.archeox.lgunenuit.utility.MutablePair;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 
 public class SelectMenuInteractHandler {
 
-    private final HashMap<Snowflake, MutablePair<Function<SelectMenuInteractEvent, Mono<Void>>, Boolean>> interactions;
+    private final HashMap<Snowflake, Tuple2<Function<SelectMenuInteractEvent, Mono<Void>>, Boolean>> interactions;
     private final HashMap<Snowflake, Publisher<Void>> callBack;
 
     public SelectMenuInteractHandler() {
@@ -35,11 +36,11 @@ public class SelectMenuInteractHandler {
                                 .map(Message::getId)
                                 .filter(interactions::containsKey)
                                 .map(snowflake -> {
-                                    MutablePair<Function<SelectMenuInteractEvent, Mono<Void>>, Boolean> pair = interactions.get(snowflake);
-                                    if (pair.getValue()) {
-                                        return interactions.remove(snowflake).getKey();
+                                    Tuple2<Function<SelectMenuInteractEvent, Mono<Void>>, Boolean> pair = interactions.get(snowflake);
+                                    if (pair.getT2()) {
+                                        return interactions.remove(snowflake).getT1();
                                     } else {
-                                        return interactions.get(snowflake).getKey();
+                                        return interactions.get(snowflake).getT1();
                                     }
                                 })
                                 .flatMap(func -> func.apply(selectMenuInteractEvent))
@@ -49,7 +50,7 @@ public class SelectMenuInteractHandler {
 
     public Snowflake registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event) {
         if (id != null && event != null) {
-            interactions.put(id, new MutablePair<>(event, true));
+            interactions.put(id, Tuples.of(event, true));
             return id;
         } else {
             return null;
@@ -58,7 +59,7 @@ public class SelectMenuInteractHandler {
 
     public Snowflake registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event, boolean autoRemove) {
         if (id != null && event != null) {
-            interactions.put(id, new MutablePair<>(event, autoRemove));
+            interactions.put(id, Tuples.of(event, autoRemove));
             return id;
         } else {
             return null;

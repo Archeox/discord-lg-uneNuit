@@ -2,18 +2,13 @@ package io.github.archeox.lgunenuit.interactions;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.SelectMenuInteractEvent;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
-import discord4j.core.object.command.Interaction;
-import discord4j.core.object.entity.Message;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import io.github.archeox.lgunenuit.utility.MutablePair;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Function;
 
 public class SlashCommandHandler {
