@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 public class LGGame {
 
+    private final Member owner;
     private final List<Member> members;
     private final List<LGRole> roles;
     private final MessageChannel channel;
@@ -36,7 +37,8 @@ public class LGGame {
     private int currentVote;
 
 
-    public LGGame(MessageChannel channel) {
+    public LGGame(MessageChannel channel, Member owner) {
+        this.owner = owner;
         this.members = new ArrayList<>();
         this.roles = new ArrayList<>();
         this.channel = channel;
@@ -55,9 +57,13 @@ public class LGGame {
         return members.add(member);
     }
 
-    public boolean setRoles(List<LGRole> roles) {
-        this.roles.clear();
-        return this.roles.addAll(roles);
+    public void addRoles(List<? extends LGRole> roles) {
+        this.roles.removeIf(role -> roles.get(0).equals(role));
+        this.roles.addAll(roles);
+    }
+
+    public Member getOwner() {
+        return owner;
     }
 
     public boolean okToStart() {

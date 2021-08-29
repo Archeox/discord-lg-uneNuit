@@ -3,6 +3,8 @@ package io.github.archeox.lgunenuit.roles.core;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.enums.Team;
 
+import java.util.Objects;
+
 public abstract class LGRole {
 
     private String name;
@@ -43,5 +45,13 @@ public abstract class LGRole {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LGRole lgRole = (LGRole) o;
+        return Objects.equals(name, lgRole.name);
     }
 }

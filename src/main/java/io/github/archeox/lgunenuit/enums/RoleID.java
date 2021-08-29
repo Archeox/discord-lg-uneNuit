@@ -3,27 +3,30 @@ package io.github.archeox.lgunenuit.enums;
 import io.github.archeox.lgunenuit.roles.*;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 public enum RoleID {
-    VILLAGEOIS("Villageois", new Villageois()),
-    CHASSEUR("Chasseur", new Chasseur()),
-    LOUPGAROU("Loup-Garou", new Chasseur()),
-    NOISEUSE("Noiseuse", new Noiseuse()),
-    SBIRE("Sbire", new Sbire()),
-    VOYANTE("Voyante", new Voyante());
+    VILLAGEOIS("Villageois", () -> new Villageois()),
+    CHASSEUR("Chasseur", () -> new Chasseur()),
+    LOUPGAROU("Loup-Garou", () -> new Chasseur()),
+    NOISEUSE("Noiseuse", () -> new Noiseuse()),
+    SBIRE("Sbire", () -> new Sbire()),
+    VOYANTE("Voyante", () -> new Voyante());
 
     private String name;
-    private LGRole role;
+    private Supplier<? extends LGRole> factory;
 
-    RoleID(String name, LGRole role) {
+    RoleID(String name, Supplier<? extends LGRole> factory) {
         this.name = name;
-        this.role = role;
+        this.factory = factory;
     }
 
     public String getName() {
         return name;
     }
 
-    public LGRole getRole() {
-        return role;
+    public LGRole getFactory() {
+        return factory.get();
     }
 }

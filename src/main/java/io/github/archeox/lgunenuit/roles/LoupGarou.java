@@ -10,8 +10,10 @@ import io.github.archeox.lgunenuit.roles.core.LGRole;
 import io.github.archeox.lgunenuit.roles.core.Noctambule;
 import io.github.archeox.lgunenuit.enums.Team;
 import io.github.archeox.lgunenuit.game.card.MysteryCard;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import reactor.core.publisher.Mono;
 
 public class LoupGarou extends LGRole implements Noctambule {
@@ -20,7 +22,7 @@ public class LoupGarou extends LGRole implements Noctambule {
 
     public LoupGarou(float turn) {
         super("Loup-Garou", "Le but du Loup-Garou est d'Ã©liminer un membre du village.\n"
-                + "Il peut de savoir qui sont les autres Loups-Garous. S'il n'y en a pas, il a le droit de regarder une carte au milieu.",
+                        + "Il peut de savoir qui sont les autres Loups-Garous. S'il n'y en a pas, il a le droit de regarder une carte au milieu.",
                 Team.LG);
         this.turn = turn;
     }
@@ -58,16 +60,14 @@ public class LoupGarou extends LGRole implements Noctambule {
             }
 
             return self.whisper((t) -> {
-                t.setContent("Vous êtes le seul Loup-Garou !\nVous pouvez observer une des cartes mystères !");
-                t.setComponents(ActionRow.of(SelectMenu.of("lg", options)));
-            })
-                    .map(Message::getId)
-                    .flatMap(id
-                            -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(id, (t) -> {
-                        return t.reply("Cette carte est " + game.getCardById(t.getValues().get(0))).
-                                thenEmpty(game.nextTurn());
+                        t.setContent("Vous êtes le seul Loup-Garou !\nVous pouvez observer une des cartes mystères !");
+                        t.setComponents(ActionRow.of(SelectMenu.of("lg", options)));
                     })
-                    );
+                    .map(Message::getId)
+                    .map(id -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(id,
+                            (t) -> t.reply("Cette carte est " + game.getCardById(t.getValues().get(0)))
+                                    .thenEmpty(game.nextTurn()))
+                    ).then();
         }
     }
 }
