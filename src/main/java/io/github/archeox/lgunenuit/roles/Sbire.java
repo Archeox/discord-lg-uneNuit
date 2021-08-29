@@ -9,12 +9,17 @@ import reactor.core.publisher.Mono;
 
 public class Sbire extends LGRole implements Noctambule {
 
-    public final int turn;
+    public float turn = 3.0f;
 
-    public Sbire(int turn) {
+    public Sbire(float turn) {
         super("Sbire", "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
                 "\nSi le Sbire est éliminé les loups-garou gagnent !", Team.SBIRE);
         this.turn = turn;
+    }
+
+    public Sbire() {
+        super("Sbire", "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
+                "\nSi le Sbire est éliminé les loups-garou gagnent !", Team.SBIRE);
     }
 
     @Override

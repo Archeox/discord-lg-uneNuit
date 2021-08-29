@@ -4,6 +4,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.SelectMenuInteractEvent;
 import discord4j.core.object.command.Interaction;
+import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
 import io.github.archeox.lgunenuit.utility.MutablePair;
 import org.reactivestreams.Publisher;
@@ -46,18 +47,22 @@ public class SelectMenuInteractHandler {
                 .subscribe();
     }
 
-    public Mono<Void> registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event) {
+    public Snowflake registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event) {
         if (id != null && event != null) {
             interactions.put(id, new MutablePair<>(event, true));
+            return id;
+        } else {
+            return null;
         }
-        return Mono.empty();
     }
 
-    public Mono<Void> registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event, boolean autoRemove) {
+    public Snowflake registerMenuInteraction(Snowflake id, Function<SelectMenuInteractEvent, Mono<Void>> event, boolean autoRemove) {
         if (id != null && event != null) {
             interactions.put(id, new MutablePair<>(event, autoRemove));
+            return id;
+        } else {
+            return null;
         }
-        return Mono.empty();
     }
 
     public void unRegisterMenuInteraction(Snowflake id) {

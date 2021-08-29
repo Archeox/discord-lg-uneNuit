@@ -17,11 +17,14 @@ import java.util.stream.Collectors;
 
 public class Voyante extends LGRole implements Noctambule {
 
-    private final float turn;
+    private float turn = 5.0f;
 
     public Voyante(float turn) {
         super("Voyante", "La Voyante peut observer la carte d'un joueur", Team.VILLAGE);
         this.turn = turn;
+    }
+    public Voyante() {
+        super("Voyante", "La Voyante peut observer la carte d'un joueur", Team.VILLAGE);
     }
 
     @Override
@@ -46,9 +49,9 @@ public class Voyante extends LGRole implements Noctambule {
                     ));
                 })
                 .map(Message::getId)
-                .flatMap(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
+                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
                         selectMenuInteractEvent.reply("Choix enregistrés !\nVoyante")
                                 .then(game.nextTurn())
-                ));
+                )).then();
     }
 }

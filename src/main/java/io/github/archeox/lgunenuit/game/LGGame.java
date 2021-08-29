@@ -36,9 +36,9 @@ public class LGGame {
     private int currentVote;
 
 
-    public LGGame(List<Member> members, List<LGRole> roles, MessageChannel channel) {
-        this.members = members;
-        this.roles = roles;
+    public LGGame(MessageChannel channel) {
+        this.members = new ArrayList<>();
+        this.roles = new ArrayList<>();
         this.channel = channel;
         this.cards = new ArrayList<>();
         this.currentTurn = 0;
@@ -47,6 +47,25 @@ public class LGGame {
         this.votePlayers = new ArrayList<>();
         this.vote = new Vote();
     }
+
+    //================================================================================================================
+    //Méthode appelée durant la configuration de la partie
+
+    public boolean addMember(Member member) {
+        return members.add(member);
+    }
+
+    public boolean setRoles(List<LGRole> roles) {
+        this.roles.clear();
+        return this.roles.addAll(roles);
+    }
+
+    public boolean okToStart() {
+        return (roles.size() == members.size() + 3);
+    }
+
+    //================================================================================================================
+    //Main Game Logic
 
     public Mono<Void> startGame() {
 
@@ -291,59 +310,6 @@ public class LGGame {
                 result.add((PlayerCard) lgCard);
             }
         }
-        return result;
-    }
-
-    //================================================================================================================
-
-    public LGGame(MessageChannel channel) {
-        this.cards = new ArrayList<>();
-        this.members = new ArrayList<>();
-        this.roles = new ArrayList<>();
-        this.nightPlayers = new ArrayList<>();
-        this.votePlayers = new ArrayList<>();
-        this.channel = channel;
-        this.vote = new Vote();
-        this.currentTurn = 0;
-        this.currentVote = 0;
-    }
-
-    public Mono<Void> testGame(Member member) {
-
-        cards.clear();
-        cards.add(new PlayerCard(member, new Villageois()));
-
-        //on envoie leur rôle aux joueurs
-        Mono<Void> result = Flux.fromIterable(cards)
-                .filter(lgCard -> lgCard instanceof PlayerCard)
-                .cast(PlayerCard.class)
-                .flatMap(lgPlayer -> lgPlayer.whisper("Tu es " + lgPlayer.getAttributedRole() + "\n" + lgPlayer.getAttributedRole().getDescription()))
-                .then()
-                .delayElement(Duration.ofSeconds(10))
-                .then(postAnnounce("La nuit tombe sur le village !"))
-                .then();
-
-        //on lance le premier tour
-        for (LGCard card : cards) {
-            if (card.getAttributedRole() instanceof Noctambule && card instanceof PlayerCard) {
-                nightPlayers.add((PlayerCard) card);
-            }
-        }
-
-        nightPlayers.sort((o1, o2) -> {
-            Noctambule n1 = ((Noctambule) o1.getAttributedRole());
-            Noctambule n2 = ((Noctambule) o2.getAttributedRole());
-            if (n1.getTurn() < n2.getTurn()) {
-                return -1;
-            } else if (n1.getTurn() > n2.getTurn()) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
-        result.then(nextTurn());
-
         return result;
     }
 }

@@ -16,15 +16,21 @@ import java.util.List;
 
 public class Noiseuse extends LGRole implements Noctambule {
 
-    private final float turn;
+    private float turn = 7.0f;
 
     public Noiseuse(float turn) {
         super("Noiseuse",
                 "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
                 Team.VILLAGE
         );
-
         this.turn = turn;
+    }
+
+    public Noiseuse() {
+        super("Noiseuse",
+                "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
+                Team.VILLAGE
+        );
     }
 
     @Override
@@ -58,10 +64,10 @@ public class Noiseuse extends LGRole implements Noctambule {
                     ));
                 })
                 .map(Message::getId)
-                .flatMap(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
+                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent ->
                         selectMenuInteractEvent.reply("Choix enregistrés !\nVoyante")
                                 .then(game.nextTurn())
-                ));
+                )).then();
 
     }
 }

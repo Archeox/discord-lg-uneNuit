@@ -44,10 +44,10 @@ public class Chasseur extends LGRole implements SpecialVoter {
                         ));
                     }))
                     .map(Message::getId)
-                    .flatMap(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
+                    .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
                         vote.setWinner(game.getCardById(selectMenuInteractEvent.getValues().get(0)));
                         return selectMenuInteractEvent.reply("Votre choix a été enregistré !").then(game.nextSpecialVoter());
-                    }));
+                    })).then();
         }else {
             return game.nextSpecialVoter();
         }
