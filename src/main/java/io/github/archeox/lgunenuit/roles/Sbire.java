@@ -11,20 +11,13 @@ public class Sbire extends LGRole implements Noctambule {
 
     public float turn = 3.0f;
 
-    public Sbire(float turn) {
-        super("Sbire", "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
-                "\nSi le Sbire est éliminé les loups-garou gagnent !", Team.SBIRE);
-        this.turn = turn;
-    }
-
-    public Sbire() {
-        super("Sbire", "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
-                "\nSi le Sbire est éliminé les loups-garou gagnent !", Team.SBIRE);
+    public Sbire(String name, String description, String emoji, Team team) {
+        super(name, description, emoji, team);
     }
 
     @Override
     public float getTurn() {
-        return 0;
+        return turn;
     }
 
     @Override

@@ -18,9 +18,8 @@ public class Chasseur extends LGRole implements SpecialVoter {
 
     private final float priority;
 
-    public Chasseur() {
-        super("Chasseur", "Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place."
-                , Team.VILLAGE);
+    public Chasseur(String name, String description, String emoji, Team team) {
+        super(name, description, emoji, team);
         this.priority = 3;
     }
 

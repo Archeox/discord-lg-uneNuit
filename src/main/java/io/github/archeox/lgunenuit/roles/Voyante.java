@@ -19,12 +19,8 @@ public class Voyante extends LGRole implements Noctambule {
 
     private float turn = 5.0f;
 
-    public Voyante(float turn) {
-        super("Voyante", "La Voyante peut observer la carte d'un joueur", Team.VILLAGE);
-        this.turn = turn;
-    }
-    public Voyante() {
-        super("Voyante", "La Voyante peut observer la carte d'un joueur", Team.VILLAGE);
+    public Voyante(String name, String description, String emoji, Team team) {
+        super(name, description, emoji, team);
     }
 
     @Override

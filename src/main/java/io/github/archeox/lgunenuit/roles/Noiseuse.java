@@ -18,19 +18,8 @@ public class Noiseuse extends LGRole implements Noctambule {
 
     private float turn = 7.0f;
 
-    public Noiseuse(float turn) {
-        super("Noiseuse",
-                "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
-                Team.VILLAGE
-        );
-        this.turn = turn;
-    }
-
-    public Noiseuse() {
-        super("Noiseuse",
-                "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
-                Team.VILLAGE
-        );
+    public Noiseuse(String name, String description, String emoji, Team team) {
+        super(name, description, emoji, team);
     }
 
     @Override

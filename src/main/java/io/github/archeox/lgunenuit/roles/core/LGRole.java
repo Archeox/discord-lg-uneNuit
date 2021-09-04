@@ -9,11 +9,13 @@ public abstract class LGRole {
 
     private String name;
     private String description;
+    private String emoji;
     private Team team;
 
-    public LGRole(String name, String description, Team team) {
+    public LGRole(String name, String description, String emoji, Team team) {
         this.name = name;
         this.description = description;
+        this.emoji = emoji;
         this.team = team;
     }
 

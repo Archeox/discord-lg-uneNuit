@@ -7,6 +7,7 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.archeox.lgunenuit.LGUneNuit;
+import io.github.archeox.lgunenuit.enums.RoleFactory;
 import io.github.archeox.lgunenuit.enums.Team;
 import io.github.archeox.lgunenuit.game.card.LGCard;
 import io.github.archeox.lgunenuit.game.card.MysteryCard;
@@ -131,7 +132,7 @@ public class LGGame {
     private Mono<Void> votePhase() {
 
         List<Button> buttons = getMembersCards().stream().map(LGCard::toButton).collect(Collectors.toList());
-        MysteryCard nobody = new MysteryCard("Nobody", new Villageois());
+        MysteryCard nobody = new MysteryCard("Nobody", (new RoleFactory()).getRole(RoleFactory.RoleID.VILLAGEOIS));
         buttons.add(Button.secondary("Nobody", "Tout le monde est innocent !"));
 
         //post voting message
