@@ -1,10 +1,14 @@
 package io.github.archeox.lgunenuit.enums;
 
+import discord4j.core.object.component.SelectMenu;
+import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.roles.*;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 import reactor.function.Function4;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -29,7 +33,7 @@ public class RoleFactory {
                 Team.VILLAGE),
         SBIRE("Sbire",
                 "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
-                        "Si le Sbire est éliminé les loups-garou gagnent !",
+                        "Si le Sbire est éliminé les Loups-Garous gagnent !",
                 "\uD83D\uDDE1?",
                 Team.SBIRE),
         VOYANTE("Voyante",
@@ -44,6 +48,9 @@ public class RoleFactory {
 
         RoleID(String name, String description, String emoji, Team team) {
             this.name = name;
+            this.description = description;
+            this.emoji = emoji;
+            this.team = team;
         }
 
         public String getName() {
@@ -64,7 +71,7 @@ public class RoleFactory {
     }
 
 
-    public LGRole getRole(RoleID id) {
+    public static LGRole getRole(RoleID id) {
         LGRole result;
         String name = id.getName();
         String desc = id.getDescription();
@@ -80,5 +87,12 @@ public class RoleFactory {
             default -> result = null;
         }
         return result;
+    }
+
+    public static SelectMenu.Option toOption(RoleID id){
+
+        //Default option
+        return SelectMenu.Option.of(id.getName(), id.name())
+                .withDescription(id.getDescription()).withEmoji(ReactionEmoji.unicode(id.getEmoji()));
     }
 }

@@ -132,7 +132,7 @@ public class LGGame {
     private Mono<Void> votePhase() {
 
         List<Button> buttons = getMembersCards().stream().map(LGCard::toButton).collect(Collectors.toList());
-        MysteryCard nobody = new MysteryCard("Nobody", (new RoleFactory()).getRole(RoleFactory.RoleID.VILLAGEOIS));
+        MysteryCard nobody = new MysteryCard("Nobody", RoleFactory.getRole(RoleFactory.RoleID.VILLAGEOIS));
         buttons.add(Button.secondary("Nobody", "Tout le monde est innocent !"));
 
         //post voting message

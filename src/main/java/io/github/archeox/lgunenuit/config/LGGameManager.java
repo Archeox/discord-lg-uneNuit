@@ -14,7 +14,7 @@ import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import io.github.archeox.lgunenuit.LGUneNuit;
-import io.github.archeox.lgunenuit.enums.RoleID;
+import io.github.archeox.lgunenuit.enums.RoleFactory;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 import reactor.core.publisher.Flux;
@@ -105,51 +105,48 @@ public class LGGameManager {
         Mono<Message> helpMsg = channel.createMessage("Utiliser la commande `/ajouterjoueur`");
         Mono<Message> helpMsg2 = channel.createMessage("Veuillez choisir les rôles pour cette partie :");
 
-        //les choix pour le nombre de rôles
-        List<SelectMenu.Option> options = Arrays.asList(
-                SelectMenu.Option.of("Aucun", "0").withDefault(true),
-                SelectMenu.Option.of("1", "1"),
-                SelectMenu.Option.of("2", "2"),
-                SelectMenu.Option.of("3", "3"),
-                SelectMenu.Option.of("4", "4")
-        );
-
-        //on crée un message par rôle
-        Mono<List<Snowflake>> roleMsgs = Flux.fromArray(RoleID.values())
-                .flatMap(id ->
-                        channel.createMessage(messageCreateSpec -> {
-                            messageCreateSpec.setContent("**" + id.getName() + "** :");
-                            messageCreateSpec.setComponents(ActionRow.of(
-                                    SelectMenu.of(id.name(), options)
-                                            .withMaxValues(1).withMinValues(1)
-                            ));
-                        })
-                )
-                .map(Message::getId)
-                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
-                            if (games.containsKey(selectMenuInteractEvent.getInteraction().getChannelId())) {
-                                LGGame currentGame = games.get(selectMenuInteractEvent.getInteraction().getChannelId());
-                                if (selectMenuInteractEvent.getInteraction().getMember().get().equals(currentGame.getOwner())) {
-                                    RoleID roleID = RoleID.valueOf(selectMenuInteractEvent.getCustomId());
-                                    List<LGRole> roles = new ArrayList<>();
-                                    for (int i = 0; i > Integer.parseInt(selectMenuInteractEvent.getValues().get(0)); i++) {
-                                        roles.add(roleID.getFactory());
-                                    }
-                                    currentGame.addRoles(roles);
-                                    return selectMenuInteractEvent.acknowledge();
-                                } else {
-                                    return selectMenuInteractEvent.replyEphemeral("Seul l'utilisateur ayant lancé la partie peut modifier la configuration");
-                                }
-                            } else {
-                                return selectMenuInteractEvent.replyEphemeral("Pas de jeu actif ici");
-                            }
-                        }, false)
-                )
-                .collectList();
+//        //on génère les menus pour les rôles
+//        List<ActionRow> actionRows = new ArrayList<>();
+//        for (RoleFactory id : RoleFactory.values()) {
+//
+//        }
+//
+//        //on crée un message par rôle
+//        Mono<List<Snowflake>> roleMsgs = Flux.fromArray(RoleFactory.values())
+//                .flatMap(id ->
+//                        channel.createMessage(messageCreateSpec -> {
+//                            messageCreateSpec.setContent("**" + id.getName() + "** :");
+//                            messageCreateSpec.setComponents(ActionRow.of(
+//                                    SelectMenu.of(id.name(), options)
+//                                            .withMaxValues(1).withMinValues(1)
+//                            ));
+//                        })
+//                )
+//                .map(Message::getId)
+//                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
+//                            if (games.containsKey(selectMenuInteractEvent.getInteraction().getChannelId())) {
+//                                LGGame currentGame = games.get(selectMenuInteractEvent.getInteraction().getChannelId());
+//                                if (selectMenuInteractEvent.getInteraction().getMember().get().equals(currentGame.getOwner())) {
+//                                    RoleFactory roleFactory = RoleFactory.valueOf(selectMenuInteractEvent.getCustomId());
+//                                    List<LGRole> roles = new ArrayList<>();
+//                                    for (int i = 0; i > Integer.parseInt(selectMenuInteractEvent.getValues().get(0)); i++) {
+//                                        roles.add(roleFactory.getObject());
+//                                    }
+//                                    currentGame.addRoles(roles);
+//                                    return selectMenuInteractEvent.acknowledge();
+//                                } else {
+//                                    return selectMenuInteractEvent.replyEphemeral("Seul l'utilisateur ayant lancé la partie peut modifier la configuration");
+//                                }
+//                            } else {
+//                                return selectMenuInteractEvent.replyEphemeral("Pas de jeu actif ici");
+//                            }
+//                        }, false)
+//                )
+//                .collectList();
 
 
         return Mono.when(helpMsg, helpMsg2)
-                .then(roleMsgs)
+//                .then(roleMsgs)
                 .thenEmpty(
                         channel.createMessage(messageCreateSpec -> {
                             messageCreateSpec.setContent("Valider la configuration :");
