@@ -1,5 +1,6 @@
 package io.github.archeox.lgunenuit.roles.core;
 
+import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.enums.Team;
 
@@ -9,10 +10,10 @@ public abstract class LGRole {
 
     private String name;
     private String description;
-    private String emoji;
+    private ReactionEmoji emoji;
     private Team team;
 
-    public LGRole(String name, String description, String emoji, Team team) {
+    public LGRole(String name, String description, ReactionEmoji emoji, Team team) {
         this.name = name;
         this.description = description;
         this.emoji = emoji;

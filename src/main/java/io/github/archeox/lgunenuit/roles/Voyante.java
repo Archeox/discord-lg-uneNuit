@@ -3,6 +3,7 @@ package io.github.archeox.lgunenuit.roles;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.LGCard;
@@ -19,7 +20,7 @@ public class Voyante extends LGRole implements Noctambule {
 
     private float turn = 5.0f;
 
-    public Voyante(String name, String description, String emoji, Team team) {
+    public Voyante(String name, String description, ReactionEmoji emoji, Team team) {
         super(name, description, emoji, team);
     }
 

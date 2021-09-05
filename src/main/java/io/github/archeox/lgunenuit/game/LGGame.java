@@ -58,9 +58,8 @@ public class LGGame {
         return members.add(member);
     }
 
-    public void addRoles(List<? extends LGRole> roles) {
-        this.roles.removeIf(role -> roles.get(0).equals(role));
-        this.roles.addAll(roles);
+    public void addRole(LGRole role) {
+        this.roles.add(role);
     }
 
     public Member getOwner() {

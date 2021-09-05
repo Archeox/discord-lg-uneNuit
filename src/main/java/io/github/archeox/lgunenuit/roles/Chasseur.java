@@ -3,6 +3,7 @@ package io.github.archeox.lgunenuit.roles;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
@@ -18,7 +19,7 @@ public class Chasseur extends LGRole implements SpecialVoter {
 
     private final float priority;
 
-    public Chasseur(String name, String description, String emoji, Team team) {
+    public Chasseur(String name, String description, ReactionEmoji emoji, Team team) {
         super(name, description, emoji, team);
         this.priority = 3;
     }

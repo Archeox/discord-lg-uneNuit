@@ -4,6 +4,7 @@ import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.roles.*;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
+import reactor.core.publisher.Mono;
 import reactor.function.Function4;
 
 import java.nio.charset.StandardCharsets;
@@ -16,41 +17,47 @@ public class RoleFactory {
     public enum RoleID {
         VILLAGEOIS("Villageois",
                 "Le Villageois ne fait rien de spécial.",
-                "\uD83E\uDDD1\u200D\uD83C\uDF3E",
-                Team.VILLAGE),
+                ReactionEmoji.codepoints("U+1F9D1", "U+200D", "U+1F33E"),
+                Team.VILLAGE,
+                true),
         CHASSEUR("Chasseur",
                 "Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place.",
-                "\uD83C\uDFAF",
-                Team.VILLAGE),
+                ReactionEmoji.codepoints("U+1F3AF"),
+                Team.VILLAGE,
+                false),
         LOUPGAROU("Loup-Garou",
-                "Le but du Loup-Garou est d'éliminer un membre du village.\n"
-                        + "Il peut de savoir qui sont les autres Loups-Garous. S'il n'y en a pas, il a le droit de regarder une carte au milieu.",
-                "\uD83D\uDC3A",
-                Team.LG),
+                "Les Loups-Garous doivent éliminer un membre du village.",
+                ReactionEmoji.codepoints("U+1F43A"),
+                Team.LG,
+                true),
         NOISEUSE("Noiseuse",
                 "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
-                "\uD83E\uDD39\u200D??",
-                Team.VILLAGE),
+                ReactionEmoji.codepoints("U+1F939", "U+200D", "U+2640", "U+FE0F"),
+                Team.VILLAGE,
+                false),
         SBIRE("Sbire",
-                "Le Sbire fait équipe avec les loups-garous et sait qui ils sont." +
-                        "Si le Sbire est éliminé les Loups-Garous gagnent !",
-                "\uD83D\uDDE1?",
-                Team.SBIRE),
+                "Le Sbire fait équipe avec les loups-garous. Si le Sbire est éliminé les Loups-Garous gagnent !",
+                ReactionEmoji.codepoints("U+1F5E1", "U+FE0F"),
+                Team.SBIRE,
+                false),
         VOYANTE("Voyante",
                 "La Voyante peut observer la carte d'un joueur.",
-                "\uD83E\uDDD9\u200D??",
-                Team.VILLAGE);
+                ReactionEmoji.codepoints("U+1F52E"),
+                Team.VILLAGE,
+                false);
 
         private String name;
         private String description;
-        private String emoji;
+        private ReactionEmoji emoji;
         private Team team;
+        private boolean multiple;
 
-        RoleID(String name, String description, String emoji, Team team) {
+        RoleID(String name, String description, ReactionEmoji emoji, Team team, boolean multiple) {
             this.name = name;
             this.description = description;
             this.emoji = emoji;
             this.team = team;
+            this.multiple = multiple;
         }
 
         public String getName() {
@@ -61,12 +68,16 @@ public class RoleFactory {
             return description;
         }
 
-        public String getEmoji() {
+        public ReactionEmoji getEmoji() {
             return emoji;
         }
 
         public Team getTeam() {
             return team;
+        }
+
+        public boolean isMultiple() {
+            return multiple;
         }
     }
 
@@ -75,7 +86,7 @@ public class RoleFactory {
         LGRole result;
         String name = id.getName();
         String desc = id.getDescription();
-        String emoji = id.getEmoji();
+        ReactionEmoji emoji = id.getEmoji();
         Team team = id.getTeam();
         switch (id) {
             case SBIRE -> result = new Sbire(name, desc, emoji, team);
@@ -89,10 +100,4 @@ public class RoleFactory {
         return result;
     }
 
-    public static SelectMenu.Option toOption(RoleID id){
-
-        //Default option
-        return SelectMenu.Option.of(id.getName(), id.name())
-                .withDescription(id.getDescription()).withEmoji(ReactionEmoji.unicode(id.getEmoji()));
-    }
 }
