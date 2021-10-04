@@ -1,5 +1,6 @@
 # Config file for voyante
 name: Voyante
 description: La Voyante peut observer la carte d'un joueur.
-codepoint: U+1F52E
+codepoints: U+1F52E
 team: VILLAGE
+number: 1

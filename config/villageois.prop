@@ -1,0 +1,6 @@
+# Config file for noiseuse
+name: Villageois
+description: Le Villageois ne fait rien de spécial.
+codepoints: U+1F9D1, U+200D, U+1F33E
+team: VILLAGE
+number: 1,2,3,4

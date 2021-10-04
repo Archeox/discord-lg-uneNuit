@@ -1,0 +1,6 @@
+# Config file for chasseur
+name: Chasseur
+description: Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place.
+codepoints: U+1F3AF
+team: VILLAGE
+number: 1

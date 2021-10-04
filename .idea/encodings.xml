@@ -2,6 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/config/noiseuse.prop" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config/sbire.prop" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/io/github/archeox/lgunenuit/config/LGGameManager.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/io/github/archeox/lgunenuit/config/RoleFactory.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/io/github/archeox/lgunenuit/enums/Team.java" charset="UTF-8" />

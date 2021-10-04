@@ -20,6 +20,7 @@ public class RoleInfoConfig {
     private String description;
     private ReactionEmoji emoji;
     private Team team;
+    private int[] number;
 
     public RoleInfoConfig(String filepath) throws RoleConfigException {
         Properties properties = new Properties();
@@ -32,7 +33,13 @@ public class RoleInfoConfig {
             String[] codepoints = ((String) properties.get("codepoints")).split(",");
             this.emoji = ReactionEmoji.codepoints(codepoints);
             this.team = Team.valueOf((String) properties.get("team"));
-        } catch (IOException ex) {
+            String[] numberString = ((String) properties.get("number")).split(",");
+            this.number = new int[numberString.length];
+            for (int i = 0; i < numberString.length; i++) {
+                number[i] = Integer.parseInt(numberString[i]);
+            }
+            System.out.println("-- Fichier : " + filepath + " chargé --");
+        } catch (IOException | NullPointerException ex) {
             throw new RoleConfigException("Problem while loading config file : " + filepath, ex.getMessage());
         }
     }
@@ -51,5 +58,9 @@ public class RoleInfoConfig {
 
     public Team getTeam() {
         return team;
+    }
+
+    public int[] getNumber() {
+        return number;
     }
 }

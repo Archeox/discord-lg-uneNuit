@@ -1,5 +1,0 @@
-# Config file for voyante
-name: Chasseur
-description: Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place.
-codepoint: U+1F3AF
-team: VILLAGE

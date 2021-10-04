@@ -1,0 +1,6 @@
+# Config file for LoupGarou
+name: Loup-Garou
+description: Les Loups-Garous doivent éliminer un membre du village.
+codepoints: U+1F43A
+team: LG
+number: 1,2,3

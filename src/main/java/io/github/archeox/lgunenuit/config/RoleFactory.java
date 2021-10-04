@@ -2,62 +2,44 @@ package io.github.archeox.lgunenuit.config;
 
 import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.archeox.lgunenuit.enums.Team;
+import io.github.archeox.lgunenuit.exception.RoleConfigException;
+import io.github.archeox.lgunenuit.helper.RoleInfoConfig;
 import io.github.archeox.lgunenuit.roles.*;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 
 public class RoleFactory {
-    public enum RoleID {
-        VILLAGEOIS("Villageois",
-                "Le Villageois ne fait rien de spécial.",
-                ReactionEmoji.codepoints("U+1F9D1", "U+200D", "U+1F33E"),
-                Team.VILLAGE),
-        CHASSEUR("Chasseur",
-                "Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place.",
-                ReactionEmoji.codepoints("U+1F3AF"),
-                Team.VILLAGE),
-        LOUPGAROU("Loup-Garou",
-                "Les Loups-Garous doivent éliminer un membre du village.",
-                ReactionEmoji.codepoints("U+1F43A"),
-                Team.LG),
-        NOISEUSE("Noiseuse",
-                "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
-                ReactionEmoji.codepoints("U+1F939", "U+200D", "U+2640", "U+FE0F"),
-                Team.VILLAGE),
-        SBIRE("Sbire",
-                "Le Sbire fait équipe avec les loups-garous. Si le Sbire est éliminé les Loups-Garous gagnent !",
-                ReactionEmoji.codepoints("U+1F5E1", "U+FE0F"),
-                Team.SBIRE),
-        VOYANTE("Voyante",
-                "La Voyante peut observer la carte d'un joueur.",
-                ReactionEmoji.codepoints("U+1F52E"),
-                Team.VILLAGE);
+    public enum RoleID{
+        VILLAGEOIS("config/villageois.prop"),
+        CHASSEUR("config/chass.prop"),
+        LOUPGAROU("config/loupgarou.prop"),
+        NOISEUSE("config/noiseuse.prop"),
+        SBIRE("config/sbire.prop"),
+        VOYANTE("config/voyante.prop");
 
-        private String name;
-        private String description;
-        private ReactionEmoji emoji;
-        private Team team;
+        private RoleInfoConfig config;
 
-        RoleID(String name, String description, ReactionEmoji emoji, Team team) {
-            this.name = name;
-            this.description = description;
-            this.emoji = emoji;
-            this.team = team;
+        RoleID(String fileName) {
+            this.config = new RoleInfoConfig(fileName);
         }
 
         public String getName() {
-            return name;
+            return config.getName();
         }
 
         public String getDescription() {
-            return description;
+            return config.getDescription();
         }
 
         public ReactionEmoji getEmoji() {
-            return emoji;
+            return config.getEmoji();
         }
 
         public Team getTeam() {
-            return team;
+            return config.getTeam();
+        }
+
+        public int[] getNumbers() {
+            return config.getNumber();
         }
 
     }

@@ -1,6 +1,6 @@
 package io.github.archeox.lgunenuit.exception;
 
-public class RoleConfigException extends Exception{
+public class RoleConfigException extends RuntimeException{
 
     private String preciseMessage;
 

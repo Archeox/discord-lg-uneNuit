@@ -56,8 +56,9 @@ public class LGGame {
         return members.add(member);
     }
 
-    public void addRole(LGRole role) {
-        this.roles.add(role);
+    public void setRole(List<LGRole> roles) {
+        this.roles.clear();
+        this.roles.addAll(roles);
     }
 
     public Member getOwner() {

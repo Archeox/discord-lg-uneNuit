@@ -44,17 +44,6 @@ public class LGUneNuit {
         SLASH_COMMAND_HANDLER.intialize(CLIENT);
         GAME_MANAGER.initalize();
 
-        RoleInfoConfig conf = null;
-        try {
-            conf = new RoleInfoConfig("config/noiseuse.prop");
-        } catch (RoleConfigException e) {
-            System.out.println(e.getPreciseMessage());
-        }
-        System.out.println(conf.getName());
-        System.out.println(conf.getDescription());
-        System.out.println(conf.getEmoji().asUnicodeEmoji());
-        System.out.println(conf.getTeam());
-
 //        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
 //        List<Member> memberList = guild.getMembers()
 //                .filter(member -> !member.isBot())
