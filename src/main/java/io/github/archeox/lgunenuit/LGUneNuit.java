@@ -5,6 +5,8 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.entity.User;
 import io.github.archeox.lgunenuit.config.LGGameManager;
+import io.github.archeox.lgunenuit.exception.RoleConfigException;
+import io.github.archeox.lgunenuit.helper.RoleInfoConfig;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SlashCommandHandler;
@@ -42,6 +44,16 @@ public class LGUneNuit {
         SLASH_COMMAND_HANDLER.intialize(CLIENT);
         GAME_MANAGER.initalize();
 
+        RoleInfoConfig conf = null;
+        try {
+            conf = new RoleInfoConfig("config/noiseuse.prop");
+        } catch (RoleConfigException e) {
+            System.out.println(e.getPreciseMessage());
+        }
+        System.out.println(conf.getName());
+        System.out.println(conf.getDescription());
+        System.out.println(conf.getEmoji().asUnicodeEmoji());
+        System.out.println(conf.getTeam());
 
 //        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
 //        List<Member> memberList = guild.getMembers()

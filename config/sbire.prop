@@ -1,0 +1,5 @@
+# Config file for noiseuse
+name: Chasseur
+description: La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.
+codepoint: U+1F939, U+200D, U+2640, U+FE0F
+team: VILLAGE

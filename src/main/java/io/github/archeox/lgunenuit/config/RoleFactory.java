@@ -1,63 +1,47 @@
-package io.github.archeox.lgunenuit.enums;
+package io.github.archeox.lgunenuit.config;
 
-import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.reaction.ReactionEmoji;
+import io.github.archeox.lgunenuit.enums.Team;
 import io.github.archeox.lgunenuit.roles.*;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
-import reactor.core.publisher.Mono;
-import reactor.function.Function4;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Supplier;
 
 public class RoleFactory {
     public enum RoleID {
         VILLAGEOIS("Villageois",
-                "Le Villageois ne fait rien de spécial.",
+                "Le Villageois ne fait rien de spÃ©cial.",
                 ReactionEmoji.codepoints("U+1F9D1", "U+200D", "U+1F33E"),
-                Team.VILLAGE,
-                true),
+                Team.VILLAGE),
         CHASSEUR("Chasseur",
-                "Si le chasseur est exécuté par le village, il peut tuer le joueur de son choix à sa place.",
+                "Si le chasseur est exÃ©cutÃ© par le village, il peut tuer le joueur de son choix Ã  sa place.",
                 ReactionEmoji.codepoints("U+1F3AF"),
-                Team.VILLAGE,
-                false),
+                Team.VILLAGE),
         LOUPGAROU("Loup-Garou",
-                "Les Loups-Garous doivent éliminer un membre du village.",
+                "Les Loups-Garous doivent Ã©liminer un membre du village.",
                 ReactionEmoji.codepoints("U+1F43A"),
-                Team.LG,
-                true),
+                Team.LG),
         NOISEUSE("Noiseuse",
-                "La noiseuse peut échanger les rôles de deux autres joueurs pendant la nuit.",
+                "La noiseuse peut Ã©changer les rÃ´les de deux autres joueurs pendant la nuit.",
                 ReactionEmoji.codepoints("U+1F939", "U+200D", "U+2640", "U+FE0F"),
-                Team.VILLAGE,
-                false),
+                Team.VILLAGE),
         SBIRE("Sbire",
-                "Le Sbire fait équipe avec les loups-garous. Si le Sbire est éliminé les Loups-Garous gagnent !",
+                "Le Sbire fait Ã©quipe avec les loups-garous. Si le Sbire est Ã©liminÃ© les Loups-Garous gagnent !",
                 ReactionEmoji.codepoints("U+1F5E1", "U+FE0F"),
-                Team.SBIRE,
-                false),
+                Team.SBIRE),
         VOYANTE("Voyante",
                 "La Voyante peut observer la carte d'un joueur.",
                 ReactionEmoji.codepoints("U+1F52E"),
-                Team.VILLAGE,
-                false);
+                Team.VILLAGE);
 
         private String name;
         private String description;
         private ReactionEmoji emoji;
         private Team team;
-        private boolean multiple;
 
-        RoleID(String name, String description, ReactionEmoji emoji, Team team, boolean multiple) {
+        RoleID(String name, String description, ReactionEmoji emoji, Team team) {
             this.name = name;
             this.description = description;
             this.emoji = emoji;
             this.team = team;
-            this.multiple = multiple;
         }
 
         public String getName() {
@@ -76,9 +60,6 @@ public class RoleFactory {
             return team;
         }
 
-        public boolean isMultiple() {
-            return multiple;
-        }
     }
 
 

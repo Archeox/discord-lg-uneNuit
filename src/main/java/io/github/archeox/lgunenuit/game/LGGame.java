@@ -7,20 +7,18 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.archeox.lgunenuit.LGUneNuit;
-import io.github.archeox.lgunenuit.enums.RoleFactory;
+import io.github.archeox.lgunenuit.config.RoleFactory;
 import io.github.archeox.lgunenuit.enums.Team;
 import io.github.archeox.lgunenuit.game.card.LGCard;
 import io.github.archeox.lgunenuit.game.card.MysteryCard;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 import io.github.archeox.lgunenuit.roles.LoupGarou;
-import io.github.archeox.lgunenuit.roles.Villageois;
 import io.github.archeox.lgunenuit.roles.core.Noctambule;
 import io.github.archeox.lgunenuit.roles.core.SpecialVoter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,7 +138,7 @@ public class LGGame {
                     messageCreateSpec.setComponents(ActionRow.of(buttons));
                 })
                 .map(Message::getId)
-                .flatMap(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
+                .map(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, buttonInteractEvent -> {
 
                     PlayerCard voter = getCardFromMember(buttonInteractEvent.getInteraction().getMember().get());
                     String id = buttonInteractEvent.getCustomId();
@@ -160,7 +158,8 @@ public class LGGame {
                     } else {
                         return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
                     }
-                }, false));
+                }, false))
+                .then();
     }
 
     //On définit quels les rôles qui modifient le Vote, et on les fait jouer

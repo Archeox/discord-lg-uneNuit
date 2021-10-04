@@ -43,18 +43,18 @@ public class ButtonInteractHandler {
                 .subscribe();
     }
 
-    public Mono<Void> registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event) {
+    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event) {
         if (id != null && event != null) {
             interactions.put(id, Tuples.of(event, true));
         }
-        return Mono.empty();
+        return id;
     }
 
-    public Mono<Void> registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event, boolean autoRemove) {
+    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event, boolean autoRemove) {
         if (id != null && event != null) {
             interactions.put(id, Tuples.of(event, autoRemove));
         }
-        return Mono.empty();
+        return id;
     }
 
     public void unRegisterInteraction(Snowflake id) {

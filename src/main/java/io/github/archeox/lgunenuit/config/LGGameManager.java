@@ -4,6 +4,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
@@ -14,7 +15,6 @@ import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import io.github.archeox.lgunenuit.LGUneNuit;
-import io.github.archeox.lgunenuit.enums.RoleFactory;
 import io.github.archeox.lgunenuit.game.LGGame;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,7 +42,7 @@ public class LGGameManager {
                         .description("Permet de lancer une partie de Loup-Garou une Nuit.")
                         .addOption(ApplicationCommandOptionData.builder()
                                 .name("salon")
-                                .description("Le salon dans lequel la partie se dÈroulera.")
+                                .description("Le salon dans lequel la partie se d√©roulera.")
                                 .type(ApplicationCommandOptionType.CHANNEL.getValue())
                                 .required(true)
                                 .build())
@@ -55,10 +55,10 @@ public class LGGameManager {
                                 .flatMap(ApplicationCommandInteractionOptionValue::asChannel)
                                 .flatMap(channel -> {
                                     if (channel.getType() == Channel.Type.GUILD_TEXT) {
-                                        return slashCommandEvent.replyEphemeral(String.format("Configuration dÈmarrÈe dans %s", channel.getMention())).log()
+                                        return slashCommandEvent.replyEphemeral(String.format("Configuration d√©marr√©e dans %s", channel.getMention())).log()
                                                 .then(sendConfig((TextChannel) channel, slashCommandEvent.getInteraction().getMember().get()));
                                     } else {
-                                        return slashCommandEvent.replyEphemeral("Veuillez sÈlectionner un salon textuel");
+                                        return slashCommandEvent.replyEphemeral("Veuillez s√©lectionner un salon textuel");
                                     }
                                 })
         );
@@ -67,10 +67,10 @@ public class LGGameManager {
         LGUneNuit.SLASH_COMMAND_HANDLER.initializeGuildCommand(868161907771711498L,
                 ApplicationCommandRequest.builder()
                         .name("ajouterjoueur")
-                        .description("Ajoute un joueur ‡ la partie crÈe dans ce salon.")
+                        .description("Ajoute un joueur √† la partie cr√©e dans ce salon.")
                         .addOption(ApplicationCommandOptionData.builder()
                                 .name("joueur")
-                                .description("Le Joueur ‡ ajouter.")
+                                .description("Le Joueur √† ajouter.")
                                 .type(ApplicationCommandOptionType.USER.getValue())
                                 .required(true)
                                 .build()
@@ -98,44 +98,59 @@ public class LGGameManager {
 
     private Mono<Void> sendConfig(TextChannel channel, Member author) {
 
-        //on crÈe la partie
+        //on cr√©e la partie
         games.put(channel.getId(), new LGGame(channel, author));
 
-        //on crÈe un message par rÙle
+        //on cr√©e un message par r√¥le
         return Flux.fromArray(RoleFactory.RoleID.values())
                 .map(roleID -> SelectMenu.Option.of(roleID.getName(), roleID.name())
                         .withDescription(roleID.getDescription())
                         .withEmoji(roleID.getEmoji())
                 )
                 .collectList()
-                .flatMap(options ->  channel.createMessage(messageCreateSpec -> {
-                                    messageCreateSpec.setContent("Veuillez choisir les rÙles pour cette partie :");
-                                    messageCreateSpec.setComponents(
-                                            ActionRow.of(
-                                                    SelectMenu.of("mySelectMenu", options
-                                                    )
-                                            )
-                                    );
-                                })
-                                .map(Message::getId)
-                                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
-                                            if (games.containsKey(selectMenuInteractEvent.getInteraction().getChannelId())) {
-                                                LGGame currentGame = games.get(selectMenuInteractEvent.getInteraction().getChannelId());
-                                                if (selectMenuInteractEvent.getInteraction().getMember().get().equals(currentGame.getOwner())) {
-                                                    for (String value : selectMenuInteractEvent.getValues()) {
-                                                        RoleFactory.RoleID id = RoleFactory.RoleID.valueOf(value);
-                                                        currentGame.addRole(RoleFactory.getRole(id));
-                                                    }
-                                                    return selectMenuInteractEvent.acknowledge();
-                                                } else {
-                                                    return selectMenuInteractEvent.replyEphemeral("Seul l'utilisateur ayant lancÈ la partie peut modifier la configuration");
-                                                }
-                                            } else {
-                                                return selectMenuInteractEvent.replyEphemeral("Pas de jeu actif ici");
-                                            }
-                                        }, false)
-                                ).then()
-                );
+                .flatMap(options -> channel.createMessage(messageCreateSpec -> {
+                    messageCreateSpec.setContent("Veuillez choisir les r√¥les pour cette partie :");
+                    messageCreateSpec.setComponents(
+                            ActionRow.of(SelectMenu.of("roleMenu", options)
+                                    .withMinValues(3)
+                                    .withMaxValues(RoleFactory.RoleID.values().length)
+                            ),
+                            ActionRow.of(Button.secondary("next", ReactionEmoji.codepoints("U+27A1", "U+FE0F")))
+                    );
+                }))
+                .map(Message::getId)
+                .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
+                            if (games.containsKey(selectMenuInteractEvent.getInteraction().getChannelId())) {
+                                LGGame currentGame = games.get(selectMenuInteractEvent.getInteraction().getChannelId());
+                                if (selectMenuInteractEvent.getInteraction().getMember().get().equals(currentGame.getOwner())) {
+                                    for (String value : selectMenuInteractEvent.getValues()) {
+                                        RoleFactory.RoleID id = RoleFactory.RoleID.valueOf(value);
+                                        currentGame.addRole(RoleFactory.getRole(id));
+                                    }
+                                    return selectMenuInteractEvent.acknowledge();
+                                } else {
+                                    return selectMenuInteractEvent.replyEphemeral("Seul l'utilisateur ayant lanc√© la partie peut modifier la configuration");
+                                }
+                            } else {
+                                return selectMenuInteractEvent.replyEphemeral("Pas de jeu actif ici");
+                            }
+                        }, false)
+                )
+                .map(snowflake -> LGUneNuit.BUTTON_INTERACT_HANDLER.registerButtonInteraction(snowflake, event -> {
+                    if (games.containsKey(event.getInteraction().getChannelId())) {
+                        LGGame currentGame = games.get(event.getInteraction().getChannelId());
+                        if (event.getInteraction().getMember().get().equals(currentGame.getOwner())) {
+                            LGUneNuit.BUTTON_INTERACT_HANDLER.unRegisterInteraction(snowflake);
+
+                            return event.acknowledge();
+                        } else {
+                            return event.replyEphemeral("Seul l'utilisateur ayant lanc√© la partie peut modifier la configuration");
+                        }
+                    } else {
+                        return event.replyEphemeral("Pas de jeu actif ici");
+                    }
+                }))
+                .then();
     }
 
     public void finishGame(TextChannel channel) {
