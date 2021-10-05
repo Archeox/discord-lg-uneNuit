@@ -2,7 +2,7 @@ package io.github.archeox.lgunenuit.interactions;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.ButtonInteractEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.Message;
 import reactor.core.publisher.Flux;
@@ -16,23 +16,23 @@ import java.util.function.Function;
 
 public class ButtonInteractHandler {
 
-    private final HashMap<Snowflake, Tuple2<Function<ButtonInteractEvent, Mono<Void>>, Boolean>> interactions;
+    private final HashMap<Snowflake, Tuple2<Function<ButtonInteractionEvent, Mono<Void>>, Boolean>> interactions;
 
     public ButtonInteractHandler() {
         this.interactions = new HashMap<>();
     }
 
     public void initalize(GatewayDiscordClient client) {
-        client.on(ButtonInteractEvent.class,
+        client.on(ButtonInteractionEvent.class,
                         buttonInteractEvent -> Flux.just(buttonInteractEvent)
-                                .map(ButtonInteractEvent::getInteraction)
+                                .map(ButtonInteractionEvent::getInteraction)
                                 .map(Interaction::getMessage)
                                 .filter(Optional::isPresent)
                                 .map(Optional::get)
                                 .map(Message::getId)
                                 .filter(snowflake -> interactions.containsKey(snowflake))
                                 .map(snowflake -> {
-                                    Tuple2<Function<ButtonInteractEvent, Mono<Void>>, Boolean> pair = interactions.get(snowflake);
+                                    Tuple2<Function<ButtonInteractionEvent, Mono<Void>>, Boolean> pair = interactions.get(snowflake);
                                     if (pair.getT2()) {
                                         return interactions.remove(snowflake).getT1();
                                     } else {
@@ -43,14 +43,14 @@ public class ButtonInteractHandler {
                 .subscribe();
     }
 
-    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event) {
+    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractionEvent, Mono<Void>> event) {
         if (id != null && event != null) {
             interactions.put(id, Tuples.of(event, true));
         }
         return id;
     }
 
-    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractEvent, Mono<Void>> event, boolean autoRemove) {
+    public Snowflake registerButtonInteraction(Snowflake id, Function<ButtonInteractionEvent, Mono<Void>> event, boolean autoRemove) {
         if (id != null && event != null) {
             interactions.put(id, Tuples.of(event, autoRemove));
         }

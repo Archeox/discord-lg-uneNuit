@@ -4,13 +4,14 @@ import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.core.spec.MessageCreateSpec;
 import io.github.archeox.lgunenuit.LGUneNuit;
+import io.github.archeox.lgunenuit.enums.Team;
 import io.github.archeox.lgunenuit.game.LGGame;
+import io.github.archeox.lgunenuit.game.Vote;
 import io.github.archeox.lgunenuit.game.card.PlayerCard;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
 import io.github.archeox.lgunenuit.roles.core.SpecialVoter;
-import io.github.archeox.lgunenuit.enums.Team;
-import io.github.archeox.lgunenuit.game.Vote;
 import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
@@ -37,18 +38,18 @@ public class Chasseur extends LGRole implements SpecialVoter {
                                     "à lui de décider qui il va éliminer avec son fusil..."
                             , self.getMember().getDisplayName()))
                     .then(
-                    self.whisper(messageCreateSpec -> {
-                        messageCreateSpec.setContent("Choisissez le joueur qui va mourir de votre fusil :");
-                        messageCreateSpec.setComponents(ActionRow.of(SelectMenu.of("chasseur", game.getMembersCards().stream().map(PlayerCard::toOption).collect(Collectors.toList()))
-                                .withMinValues(1).withMaxValues(1)
-                        ));
-                    }))
+                            self.whisper(MessageCreateSpec.create()
+                                    .withContent("Choisissez le joueur qui va mourir de votre fusil :")
+                                    .withComponents(ActionRow.of(SelectMenu.of("chasseur",
+                                                    game.getMembersCards().stream().map(PlayerCard::toOption).collect(Collectors.toList()))
+                                            .withMinValues(1).withMaxValues(1)))
+                            ))
                     .map(Message::getId)
                     .map(snowflake -> LGUneNuit.MENU_INTERACT_HANDLER.registerMenuInteraction(snowflake, selectMenuInteractEvent -> {
                         vote.setWinner(game.getCardById(selectMenuInteractEvent.getValues().get(0)));
                         return selectMenuInteractEvent.reply("Votre choix a été enregistré !").then(game.nextSpecialVoter());
                     })).then();
-        }else {
+        } else {
             return game.nextSpecialVoter();
         }
     }

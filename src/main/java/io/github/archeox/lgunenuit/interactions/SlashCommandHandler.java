@@ -2,7 +2,7 @@ package io.github.archeox.lgunenuit.interactions;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import reactor.core.publisher.Flux;
@@ -14,7 +14,7 @@ import java.util.function.Function;
 public class SlashCommandHandler {
 
     private GatewayDiscordClient client;
-    private final HashMap<Snowflake, Function<SlashCommandEvent, Mono<Void>>> interactions;
+    private final HashMap<Snowflake, Function<ChatInputInteractionEvent, Mono<Void>>> interactions;
 
     public SlashCommandHandler() {
         this.interactions = new HashMap<>();
@@ -23,9 +23,9 @@ public class SlashCommandHandler {
     public void intialize(GatewayDiscordClient client) {
         this.client = client;
 
-        this.client.on(SlashCommandEvent.class,
+        this.client.on(ChatInputInteractionEvent.class,
                         selectMenuInteractEvent -> Flux.just(selectMenuInteractEvent)
-                                .map(SlashCommandEvent::getCommandId)
+                                .map(ChatInputInteractionEvent::getCommandId)
                                 .filter(interactions::containsKey)
                                 .map(snowflake -> interactions.get(snowflake))
                                 .flatMap(func -> func.apply(selectMenuInteractEvent))
@@ -33,7 +33,7 @@ public class SlashCommandHandler {
                 .subscribe();
     }
 
-    public void initializeGlobalCommand(ApplicationCommandRequest request, Function<SlashCommandEvent, Mono<Void>> event) {
+    public void initializeGlobalCommand(ApplicationCommandRequest request, Function<ChatInputInteractionEvent, Mono<Void>> event) {
         Mono.just(client.getRestClient())
                 .flatMap(restClient ->
                         restClient.getApplicationId()
@@ -60,7 +60,7 @@ public class SlashCommandHandler {
 
 
     //FOR DEBUG
-    public void initializeGuildCommand(long guildId, ApplicationCommandRequest request, Function<SlashCommandEvent, Mono<Void>> event) {
+    public void initializeGuildCommand(long guildId, ApplicationCommandRequest request, Function<ChatInputInteractionEvent, Mono<Void>> event) {
         Mono.just(client.getRestClient())
                 .flatMap(restClient ->
                         restClient.getApplicationId()

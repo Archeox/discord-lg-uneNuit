@@ -28,7 +28,7 @@ public class PlayerCard extends LGCard {
         return member.getPrivateChannel().flatMap(privateChannel -> privateChannel.createMessage(message));
     }
 
-    public Mono<Message> whisper(Consumer<MessageCreateSpec> content) {
+    public Mono<Message> whisper(MessageCreateSpec content) {
             return this.getMember().getPrivateChannel()
                     .flatMap(privateChannel -> privateChannel.createMessage(content));
     }

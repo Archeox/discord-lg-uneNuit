@@ -151,13 +151,16 @@ public class LGGame {
                         vote.registerVote(voter, voted);
                         if (vote.hasEveryBodyVoted(getMembersCards())) {
                             LGUneNuit.BUTTON_INTERACT_HANDLER.unRegisterInteraction(snowflake);
-                            return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !")
+                            return buttonInteractEvent.reply("Votre vote à été enregistré !")
+                                    .withEphemeral(true)
                                     .then(specialVoterInit());
                         } else {
-                            return buttonInteractEvent.replyEphemeral("Votre vote à été enregistré !");
+                            return buttonInteractEvent.reply("Votre vote à été enregistré !")
+                                    .withEphemeral(true);
                         }
                     } else {
-                        return buttonInteractEvent.replyEphemeral("Vous avez déjà voté !");
+                        return buttonInteractEvent.reply("Vous avez déjà voté !")
+                                .withEphemeral(true);
                     }
                 }, false))
                 .then();

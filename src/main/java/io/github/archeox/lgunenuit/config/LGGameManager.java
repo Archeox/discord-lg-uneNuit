@@ -12,7 +12,6 @@ import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import discord4j.rest.util.ApplicationCommandOptionType;
 import io.github.archeox.lgunenuit.LGUneNuit;
 import io.github.archeox.lgunenuit.game.LGGame;
 import io.github.archeox.lgunenuit.roles.core.LGRole;
@@ -45,7 +44,7 @@ public class LGGameManager {
                         .addOption(ApplicationCommandOptionData.builder()
                                 .name("salon")
                                 .description("Le salon dans lequel la partie se déroulera.")
-                                .type(ApplicationCommandOptionType.CHANNEL.getValue())
+                                .type(7)
                                 .required(true)
                                 .build())
                         .build(),
@@ -57,10 +56,12 @@ public class LGGameManager {
                                 .flatMap(ApplicationCommandInteractionOptionValue::asChannel)
                                 .flatMap(channel -> {
                                     if (channel.getType() == Channel.Type.GUILD_TEXT) {
-                                        return slashCommandEvent.replyEphemeral(String.format("Configuration démarrée dans %s", channel.getMention())).log()
+                                        return slashCommandEvent.reply(String.format("Configuration démarrée dans %s", channel.getMention()))
+                                                .withEphemeral(true)
                                                 .then(sendConfig((TextChannel) channel, slashCommandEvent.getInteraction().getMember().get()));
                                     } else {
-                                        return slashCommandEvent.replyEphemeral("Veuillez sélectionner un salon textuel");
+                                        return slashCommandEvent.reply("Veuillez sélectionner un salon textuel")
+                                                .withEphemeral(true);
                                     }
                                 })
         );
@@ -73,7 +74,7 @@ public class LGGameManager {
                         .addOption(ApplicationCommandOptionData.builder()
                                 .name("joueur")
                                 .description("Le Joueur à ajouter.")
-                                .type(ApplicationCommandOptionType.USER.getValue())
+                                .type(6)
                                 .required(true)
                                 .build()
                         )
@@ -93,7 +94,8 @@ public class LGGameManager {
                                 )
                                 .then();
                     } else {
-                        return slashCommandEvent.replyEphemeral("Pas de partie de ce salon.");
+                        return slashCommandEvent.reply("Pas de partie de ce salon.")
+                                .withEphemeral(true);
                     }
                 });
     }
@@ -144,10 +146,12 @@ public class LGGameManager {
                                     currentGame.setRole(roles);
                                     return selectMenuInteractEvent.acknowledge();
                                 } else {
-                                    return selectMenuInteractEvent.replyEphemeral("Seul l'utilisateur ayant lancé la partie peut modifier la configuration");
+                                    return selectMenuInteractEvent.reply("Seul l'utilisateur ayant lancé la partie peut modifier la configuration")
+                                            .withEphemeral(true);
                                 }
                             } else {
-                                return selectMenuInteractEvent.replyEphemeral("Pas de jeu actif ici");
+                                return selectMenuInteractEvent.reply("Pas de jeu actif ici")
+                                        .withEphemeral(true);
                             }
                         }, false)
                 )
