@@ -4,7 +4,6 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.object.command.Interaction;
-import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.entity.Message;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;

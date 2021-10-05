@@ -71,6 +71,7 @@ public class LGGameManager {
                 ApplicationCommandRequest.builder()
                         .name("ajouterjoueur")
                         .description("Ajoute un joueur à la partie crée dans ce salon.")
+                        .type()
                         .addOption(ApplicationCommandOptionData.builder()
                                 .name("joueur")
                                 .description("Le Joueur à ajouter.")
@@ -98,6 +99,7 @@ public class LGGameManager {
                                 .withEphemeral(true);
                     }
                 });
+
     }
 
     private Mono<Void> sendConfig(TextChannel channel, Member author) {

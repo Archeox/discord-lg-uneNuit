@@ -10,6 +10,7 @@ import io.github.archeox.lgunenuit.helper.RoleInfoConfig;
 import io.github.archeox.lgunenuit.interactions.ButtonInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SelectMenuInteractHandler;
 import io.github.archeox.lgunenuit.interactions.SlashCommandHandler;
+import io.github.archeox.lgunenuit.interactions.UserInteractionEventHandler;
 
 public class LGUneNuit {
     
@@ -19,6 +20,7 @@ public class LGUneNuit {
     public final static SelectMenuInteractHandler MENU_INTERACT_HANDLER = new SelectMenuInteractHandler();
     public final static ButtonInteractHandler BUTTON_INTERACT_HANDLER = new ButtonInteractHandler();
     public final static SlashCommandHandler SLASH_COMMAND_HANDLER = new SlashCommandHandler();
+    public final static UserInteractionEventHandler USER_INTERACT_HANDLER = new UserInteractionEventHandler();
     public final static LGGameManager GAME_MANAGER = new LGGameManager();
     private static GatewayDiscordClient CLIENT;
 
@@ -42,6 +44,7 @@ public class LGUneNuit {
         MENU_INTERACT_HANDLER.initalize(CLIENT);
         BUTTON_INTERACT_HANDLER.initalize(CLIENT);
         SLASH_COMMAND_HANDLER.intialize(CLIENT);
+        USER_INTERACT_HANDLER.initalize(CLIENT);
         GAME_MANAGER.initalize();
 
 //        Guild guild = CLIENT.getGuildById(Snowflake.of("868161907771711498")).block();
