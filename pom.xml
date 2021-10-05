@@ -6,7 +6,7 @@
 
     <groupId>io.github.archeox</groupId>
     <artifactId>discord-lg-uneNuit</artifactId>
-    <version>2021.07.24</version>
+    <version>3.2.0</version>
 
     <properties>
         <maven.compiler.source>15</maven.compiler.source>
@@ -30,17 +30,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.lhotari</groupId>
-            <artifactId>reactor-error-prone</artifactId>
-            <version>0.1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
